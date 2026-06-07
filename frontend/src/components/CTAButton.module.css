@@ -1,0 +1,33 @@
+/* Outlined button — transparent default, cream fill on hover */
+.button {
+  display: inline-block;
+  padding: 0.75rem 2.25rem;
+  border: 1px solid rgba(244, 241, 234, 0.15);
+  border-radius: 3px;
+  background: transparent;
+  color: #F4F1EA;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  text-decoration: none;
+  cursor: pointer;
+  /* smooth fill-in on hover, no abrupt jumps */
+  transition:
+    background   280ms ease,
+    color        280ms ease,
+    border-color 280ms ease;
+}
+
+/* Hover — cream fill with dark text, border matches background */
+.button:hover {
+  background:    #F4F1EA;
+  color:         #0D0D0D;
+  border-color:  #F4F1EA;
+}
+
+/* Remove mouse-click focus ring, keep keyboard ring for accessibility */
+.button:focus:not(:focus-visible) {
+  outline: none;
+}

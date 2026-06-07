@@ -1,0 +1,50 @@
+/* Google Fonts must be imported before everything else */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@1,400;1,600&family=Space+Grotesk:wght@600;700&display=swap');
+@import "tailwindcss";
+
+/* ── Design Tokens ────────────────────────────────────────────────── */
+/* Wrapped in @layer base so they register correctly within            */
+/* Tailwind v4's CSS layer system and are never overridden             */
+@layer base {
+  :root {
+    --bg:           #000000;  /* page background */
+    --text-primary: #F4F1EA;  /* warm cream — main readable text */
+    --text-muted:   #A7A299;  /* warm grey — secondary / supporting text */
+    --accent:       #6F1D1B;  /* deep crimson — used sparingly */
+    --border:       rgba(244, 241, 234, 0.12); /* subtle warm border */
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* ── Keyframe — must live outside any @layer ──────────────────────── */
+@keyframes blink-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+/* ── Custom component classes ─────────────────────────────────────── */
+@layer components {
+
+  /* Status dot — slow pulse feels elegant, not urgent */
+  .blink {
+    animation: blink-dot 2.4s ease-in-out infinite;
+  }
+
+  /* Cormorant Garamond italic — used on "Hola," and the tagline */
+  .font-cormorant {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+  }
+
+  /* Space Grotesk — hero title font */
+  .font-space-grotesk {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+  }
+
+}
