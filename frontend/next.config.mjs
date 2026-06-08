@@ -1,14 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async redirects() {
+  async rewrites() {
     return [
       {
-        source: '/',
-        destination: '/home',
-        permanent: true, // 308 redirect — SEO-friendly
+        source: '/about',
+        destination: '/',
+      },
+      {
+        source: '/home',
+        destination: '/',
       },
     ];
   },
+
 };
 
 export default nextConfig;

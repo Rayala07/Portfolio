@@ -25,10 +25,9 @@ const fadeUp = {
     visible: { opacity: 1, y: 0 }
 };
 
-/* ── Page ─────────────────────────────────────────────────────────── */
-export default function Home() {
+export default function HeroSection() {
     return (
-        <main className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+        <section id="home" className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden">
             <div className="flex flex-col items-center justify-center text-center max-w-6xl w-full px-4 mt-8">
                 <motion.div
                     initial="hidden"
@@ -36,15 +35,15 @@ export default function Home() {
                     transition={{ staggerChildren: 0.2 }}
                     className="flex flex-col items-center w-full"
                 >
-                    {/* Shrink-wrapped inner container to align Hola with F exactly */}
+
                     <div className="flex flex-col items-start w-max max-w-full mx-auto">
-                        <motion.p 
+                        <motion.p
                             variants={fadeUp}
                             transition={{ duration: 0.8, ease: "easeOut" }}
-                            className="text-xl mb-4 flex items-center gap-2 self-start" 
+                            className="text-xl mb-4 flex items-center gap-2 self-start"
                             style={{ color: 'var(--text-muted)' }}
                         >
-                            <span className='font-cormorant text-2xl' style={{ color: 'var(--accent)' }}>Hola,</span>
+                            <span className='font-cormorant text-2xl' style={{ color: 'var(--accent)' }}>Hey there,</span>
                             <span>I am <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Rayala Viswanath</span></span>
                         </motion.p>
 
@@ -54,7 +53,7 @@ export default function Home() {
                             className="font-space-grotesk leading-[0.9] mb-6 tracking-tight text-center w-full"
                             style={{ fontSize: 'clamp(3rem, 9vw, 6.5rem)' }}
                         >
-                            FULLSTACK AI<br/>ENGINEER
+                            FULLSTACK AI<br />ENGINEER
                         </motion.h1>
                     </div>
 
@@ -104,11 +103,9 @@ export default function Home() {
                 </motion.div>
             </div>
 
-
-
             {/* Scroll Indicator */}
             <motion.div
-                className="absolute bottom-8 flex flex-col items-center gap-2 text-[var(--text-muted)]"
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[var(--text-muted)]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.5, duration: 1 }}
@@ -120,6 +117,6 @@ export default function Home() {
                     <ArrowDownIcon />
                 </motion.div>
             </motion.div>
-        </main>
-    )
+        </section>
+    );
 }
