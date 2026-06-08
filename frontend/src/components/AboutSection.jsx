@@ -56,7 +56,7 @@ export default function AboutSection() {
                         </motion.p>
 
                         <motion.p variants={fadeUp} transition={{ duration: 0.8, ease: "easeOut" }}>
-                            I build software with a focus on outcomes. Automating operations, improving user experiences, reducing manual effort, and turning ideas into products that create efficient business value. Rather than viewing development as a collection of features and tasks, I approach it as a process of solving problems and removing obstacles that prevent growth.
+                            I build complete production-ready applications from UI to deployment, integrating modern AI capabilities where they create real business value with a focus on outcome. Automating operations, improving user experiences, reducing manual effort, and turning ideas into products. Rather than viewing development as a collection of features and tasks, I approach it as a process of solving problems and removing obstacles that prevent growth.
                         </motion.p>
 
                         <motion.p variants={fadeUp} transition={{ duration: 0.8, ease: "easeOut" }}>
@@ -64,7 +64,7 @@ export default function AboutSection() {
                         </motion.p>
 
                         <motion.p variants={fadeUp} transition={{ duration: 0.8, ease: "easeOut" }} className="pt-2">
-                            <span style={{ color: 'var(--text-primary)' }}>From concept to execution, the goal is simple</span> — Create reliable digital products and systems that deliver meaningful results for the people who use them and the businesses that depend on them.
+                            <span style={{ color: 'var(--text-primary)' }}>From concept to execution, the goal is simple</span> → To create reliable digital products and systems that deliver meaningful results for the people who use them and the businesses that depend on them.
                         </motion.p>
                     </div>
                 </motion.div>

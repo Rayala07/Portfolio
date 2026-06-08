@@ -7,11 +7,11 @@
 /* Tailwind v4's CSS layer system and are never overridden             */
 @layer base {
   :root {
-    --bg:           #000000;  /* page background */
-    --text-primary: #F4F1EA;  /* warm cream — main readable text */
-    --text-muted:   #A7A299;  /* warm grey — secondary / supporting text */
-    --accent:       #6F1D1B;  /* deep crimson — used sparingly */
-    --border:       rgba(244, 241, 234, 0.12); /* subtle warm border */
+    --bg:           #050505;  /* page background */
+    --text-primary: #F5F3F0;  /* main readable text */
+    --text-muted:   #A0A0A0;  /* secondary / supporting text */
+    --accent:       #A89BF2;  /* accent color */
+    --border:       #1A1A1A;  /* subtle border */
   }
 
   body {
