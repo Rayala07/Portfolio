@@ -11,7 +11,7 @@ const fadeUp = {
 
 export default function AboutSection() {
     return (
-        <section id="about" className="min-h-screen w-full flex flex-col items-center pt-32 pb-24 px-4 relative overflow-hidden">
+        <section id="about" className="h-screen w-full flex flex-col items-center justify-center py-12 px-4 relative overflow-hidden">
             <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20 items-center mt-8">
                 
                 {/* Image Placeholder (Left Column, spans 5 cols) */}

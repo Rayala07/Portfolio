@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
+import ProjectCard from '@/components/ProjectCard';
 
 export default function PortfolioSinglePage() {
     useEffect(() => {
@@ -44,6 +45,18 @@ export default function PortfolioSinglePage() {
         <main className="flex flex-col w-full relative">
             <HeroSection />
             <AboutSection />
+            <ProjectCard 
+                title="ORBIT ANALYTICS"
+                subtitle="Visually stunning dashboards that turn raw numbers into actionable business insights."
+                ctaLabel="Explore it Live"
+                ctaHref="#"
+                images={[]}
+                features={[
+                    { title: "What is the project", description: "A B2B SaaS platform for visualizing internal company metrics in real-time." },
+                    { title: "Main Feature", description: "Customizable widget grid with WebSockets for live data streaming." },
+                    { title: "Tech Stack", description: "Vue.js, D3.js, Express, MongoDB" }
+                ]}
+            />
         </main>
     );
 }

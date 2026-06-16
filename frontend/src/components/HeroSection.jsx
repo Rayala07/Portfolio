@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import CTAButton from '@/components/CTAButton';
 import { motion } from 'motion/react';
 
 /* ── Pixel Art Icons (Inline SVGs from pixelarticons) ── */
@@ -27,7 +26,7 @@ const fadeUp = {
 
 export default function HeroSection() {
     return (
-        <section id="home" className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden">
+        <section id="home" className="h-screen w-full flex flex-col items-center justify-center relative overflow-hidden">
             <div className="flex flex-col items-center justify-center text-center max-w-6xl w-full px-4 mt-8">
                 <motion.div
                     initial="hidden"
@@ -96,8 +95,8 @@ export default function HeroSection() {
                             </span>
                         </div>
                         <div className="flex gap-6 justify-center w-full max-w-md">
-                            <CTAButton href="/resume" label="Resume" />
-                            <CTAButton href="/projects" label="Projects" />
+                            <button className='cursor-pointer p-3'>Resume</button>
+                            <button className='cursor-pointer p-3'>Projects</button>
                         </div>
                     </motion.div>
                 </motion.div>
