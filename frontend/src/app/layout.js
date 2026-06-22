@@ -1,5 +1,6 @@
 import "./globals.css";
 import "@hackernoon/pixel-icon-library/fonts/iconfont.css";
+import CustomCursor from "@/components/CustomCursor";
 
 export const metadata = {
   title: "Rayala Viswanath | Fullstack AI Engineer",
@@ -8,11 +9,16 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="en"
-      className={`h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className="h-full antialiased">
+      <head>
+        {/* Preconnect to Google Fonts to eliminate render-blocking latency */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
+      <body className="min-h-full flex flex-col">
+        <CustomCursor />
+        {children}
+      </body>
     </html>
   );
 }

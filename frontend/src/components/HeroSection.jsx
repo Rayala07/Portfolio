@@ -3,119 +3,228 @@
 import React from 'react';
 import { motion } from 'motion/react';
 
-/* ── Pixel Art Icons (Inline SVGs from pixelarticons) ── */
-const GithubIcon = () => (
-    <i className="hn hn-github text-3xl"></i>
+const GithubIcon = () => <i className="hn hn-github text-xl" />;
+const LinkedinIcon = () => <i className="hn hn-linkedin text-xl" />;
+
+// Animated line that draws itself left-to-right
+const DrawLine = ({ delay = 0 }) => (
+  <motion.div
+    style={{ height: '1px', backgroundColor: 'var(--border)', transformOrigin: 'left center' }}
+    initial={{ scaleX: 0 }}
+    animate={{ scaleX: 1 }}
+    transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay }}
+  />
 );
 
-const LinkedinIcon = () => (
-    <i className="hn hn-linkedin text-3xl"></i>
+// Per-letter clip-reveal: each letter slides up from behind an overflow mask
+const RevealLine = ({ text, startDelay = 0, accentPeriod = false }) => (
+  <div style={{ overflow: 'hidden', lineHeight: 1 }}>
+    <div>
+      {text.split('').map((char, i) => (
+        <motion.span
+          key={i}
+          style={{ display: 'inline-block' }}
+          initial={{ y: '110%' }}
+          animate={{ y: '0%' }}
+          transition={{
+            duration: 0.75,
+            ease: [0.22, 1, 0.36, 1],
+            delay: startDelay + i * 0.038,
+          }}
+        >
+          {char === ' ' ? ' ' : char}
+        </motion.span>
+      ))}
+      {accentPeriod && (
+        <motion.span
+          style={{ display: 'inline-block', color: 'var(--accent)' }}
+          initial={{ y: '110%' }}
+          animate={{ y: '0%' }}
+          transition={{
+            duration: 0.75,
+            ease: [0.22, 1, 0.36, 1],
+            delay: startDelay + text.length * 0.038,
+          }}
+        >
+          .
+        </motion.span>
+      )}
+    </div>
+  </div>
 );
-
-const ArrowDownIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M13 12h6v2h-2v2h-2v2h-2v2h-2v-2H9v-2H7v-2H5v-2h6V4h2v8Z" />
-    </svg>
-);
-
-/* ── Animation Variants ── */
-const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0 }
-};
 
 export default function HeroSection() {
-    return (
-        <section id="home" className="h-screen w-full flex flex-col items-center justify-center relative overflow-hidden">
-            <div className="flex flex-col items-center justify-center text-center max-w-6xl w-full px-4 mt-8">
-                <motion.div
-                    initial="hidden"
-                    animate="visible"
-                    transition={{ staggerChildren: 0.2 }}
-                    className="flex flex-col items-center w-full"
-                >
+  return (
+    <section
+      id="home"
+      className="h-screen w-full flex flex-col relative overflow-hidden"
+      style={{ padding: '0 clamp(1.5rem, 5vw, 4rem)' }}
+    >
+      {/* Background watermark — "RV" initials, barely visible */}
+      <div
+        className="absolute inset-0 flex items-center justify-end pointer-events-none select-none overflow-hidden"
+        style={{ paddingRight: 'clamp(1.5rem, 5vw, 4rem)' }}
+        aria-hidden="true"
+      >
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.028 }}
+          transition={{ duration: 2.5, delay: 0.8 }}
+          style={{
+            fontSize: 'clamp(10rem, 24vw, 22rem)',
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontWeight: 700,
+            lineHeight: 1,
+            userSelect: 'none',
+            letterSpacing: '-0.04em',
+            color: 'var(--text-primary)',
+          }}
+        >
+          RV
+        </motion.span>
+      </div>
 
-                    <div className="flex flex-col items-start w-max max-w-full mx-auto">
-                        <motion.p
-                            variants={fadeUp}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                            className="text-xl mb-4 flex items-center gap-2 self-start"
-                            style={{ color: 'var(--text-muted)' }}
-                        >
-                            <span className='font-cormorant text-2xl' style={{ color: 'var(--accent)' }}>Hey there,</span>
-                            <span>I am <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Rayala Viswanath</span></span>
-                        </motion.p>
+      {/* Top bar */}
+      <div className="flex items-center justify-between pt-8 z-10">
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="text-xs tracking-[0.18em] uppercase"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          Portfolio — 2026
+        </motion.span>
 
-                        <motion.h1
-                            variants={fadeUp}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                            className="font-space-grotesk leading-[0.9] mb-6 tracking-tight text-center w-full"
-                            style={{ fontSize: 'clamp(3rem, 9vw, 6.5rem)' }}
-                        >
-                            FULLSTACK AI<br />ENGINEER
-                        </motion.h1>
-                    </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="flex items-center gap-2.5"
+        >
+          <span
+            className="blink rounded-full flex-shrink-0"
+            style={{
+              width: '7px',
+              height: '7px',
+              display: 'inline-block',
+              backgroundColor: '#22c55e',
+              boxShadow: '0 0 8px rgba(34,197,94,0.6)',
+            }}
+          />
+          <span
+            className="text-xs tracking-[0.15em] uppercase"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Open to Full-time
+          </span>
+        </motion.div>
+      </div>
 
-                    <motion.p
-                        variants={fadeUp}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="font-cormorant text-2xl mb-8 max-w-2xl text-center"
-                        style={{ color: 'var(--text-muted)' }}
-                    >
-                        Building scalable production AI Web platforms.
-                    </motion.p>
+      {/* Top divider — draws in from left */}
+      <div className="mt-4 z-10">
+        <DrawLine delay={0.3} />
+      </div>
 
-                    {/* Social Links below the hero text */}
-                    <motion.div
-                        variants={fadeUp}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="flex justify-center items-center gap-6 mb-12"
-                    >
-                        <a href="" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-16 h-16 rounded-full border opacity-70 hover:opacity-100 hover:bg-[var(--text-primary)] hover:text-[#0D0D0D] transition-all duration-300" style={{ borderColor: 'var(--border)' }}>
-                            <GithubIcon />
-                        </a>
-                        <a href="" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-16 h-16 rounded-full border opacity-70 hover:opacity-100 hover:bg-[var(--text-primary)] hover:text-[#0D0D0D] transition-all duration-300" style={{ borderColor: 'var(--border)' }}>
-                            <LinkedinIcon />
-                        </a>
-                    </motion.div>
+      {/* Main title block — pinned to bottom of flex-1 area */}
+      <div className="flex-1 flex flex-col justify-end pb-3 z-10">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.45 }}
+          className="text-xs tracking-[0.2em] uppercase mb-5"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          01 / Identity
+        </motion.p>
 
-                    {/* Availability and CTAs grouped with the hero block */}
-                    <motion.div
-                        variants={fadeUp}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="flex flex-col items-center w-full"
-                    >
-                        <div className="flex items-center justify-center gap-3 mb-8">
-                            <span
-                                className="blink rounded-full flex-shrink-0"
-                                style={{ width: '10px', height: '10px', backgroundColor: '#22c55e', boxShadow: '0 0 10px rgba(34, 197, 94, 0.5)' }}
-                            />
-                            <span className="text-sm font-medium tracking-wide uppercase" style={{ color: 'var(--text-muted)' }}>
-                                Open To Full-time Roles
-                            </span>
-                        </div>
-                        <div className="flex gap-6 justify-center w-full max-w-md">
-                            <button className='cursor-pointer p-3'>Resume</button>
-                            <button className='cursor-pointer p-3'>Projects</button>
-                        </div>
-                    </motion.div>
-                </motion.div>
-            </div>
+        <h1
+          className="font-space-grotesk tracking-tight"
+          style={{ fontSize: 'clamp(4rem, 11vw, 9rem)', lineHeight: 0.9 }}
+        >
+          <RevealLine text="FULLSTACK AI" startDelay={0.5} />
+          <div style={{ marginTop: '0.05em' }}>
+            <RevealLine text="ENGINEER" startDelay={0.65} accentPeriod />
+          </div>
+        </h1>
+      </div>
 
-            {/* Scroll Indicator */}
-            <motion.div
-                className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[var(--text-muted)]"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.5, duration: 1 }}
-            >
-                <motion.div
-                    animate={{ y: [0, 6, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                >
-                    <ArrowDownIcon />
-                </motion.div>
-            </motion.div>
-        </section>
-    );
+      {/* Bottom divider — draws in from left */}
+      <div className="z-10 mt-8">
+        <DrawLine delay={1.05} />
+      </div>
+
+      {/* Bottom info bar — name / tagline / socials+cta */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 1.15 }}
+        className="z-10 py-6 grid grid-cols-1 md:grid-cols-3 items-center gap-6 md:gap-4"
+      >
+        {/* Identity */}
+        <div>
+          <p
+            className="text-xs tracking-[0.15em] uppercase mb-1.5"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Engineer
+          </p>
+          <p
+            className="font-medium tracking-wide"
+            style={{ color: 'var(--text-primary)', fontSize: '0.95rem' }}
+          >
+            Rayala Viswanath
+          </p>
+        </div>
+
+        {/* Tagline */}
+        <p
+          className="font-cormorant text-lg md:text-center"
+          style={{ color: 'var(--text-muted)', lineHeight: 1.45 }}
+        >
+          Building scalable production
+          <br className="hidden md:block" /> AI web platforms.
+        </p>
+
+        {/* Socials + Resume */}
+        <div className="flex items-center gap-5 md:justify-end">
+          <a
+            href=""
+            target="_blank"
+            rel="noopener noreferrer"
+            className="opacity-40 hover:opacity-100 transition-opacity duration-300"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            <GithubIcon />
+          </a>
+          <a
+            href=""
+            target="_blank"
+            rel="noopener noreferrer"
+            className="opacity-40 hover:opacity-100 transition-opacity duration-300"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            <LinkedinIcon />
+          </a>
+          <motion.button
+            whileHover={{
+              backgroundColor: 'var(--text-primary)',
+              color: '#050505',
+              borderColor: 'var(--text-primary)',
+            }}
+            transition={{ duration: 0.22 }}
+            style={{
+              borderColor: 'var(--border)',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              fontSize: '0.72rem',
+            }}
+            className="tracking-[0.12em] uppercase border px-5 py-2.5"
+          >
+            Resume →
+          </motion.button>
+        </div>
+      </motion.div>
+    </section>
+  );
 }
