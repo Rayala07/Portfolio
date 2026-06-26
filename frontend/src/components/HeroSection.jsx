@@ -3,8 +3,8 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'motion/react';
 
-const GithubIcon = () => <i className="hn hn-github text-2xl" />;
-const LinkedinIcon = () => <i className="hn hn-linkedin text-2xl" />;
+const GithubIcon   = () => <i className="hn hn-github text-3xl" />;
+const LinkedinIcon = () => <i className="hn hn-linkedin text-3xl" />;
 
 // ── Dot grid — dots repel from cursor; displaced dots glow lavender
 const DotGrid = () => {
@@ -178,12 +178,12 @@ const RevealLine = ({ text, startDelay = 0, accentPeriod = false }) => (
       {text.split('').map((char, i) => (
         <motion.span
           key={i}
-          style={{ display: 'inline-block' }}
+          style={{ display: 'inline-block', ...(char === ' ' && { width: '0.3em' }) }}
           initial={{ y: '110%' }}
           animate={{ y: '0%' }}
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1], delay: startDelay + i * 0.038 }}
         >
-          {char === ' ' ? ' ' : char}
+          {char === ' ' ? '\u00A0' : char}
         </motion.span>
       ))}
       {accentPeriod && (
@@ -201,11 +201,6 @@ const RevealLine = ({ text, startDelay = 0, accentPeriod = false }) => (
 );
 
 export default function HeroSection() {
-
-  const handleClick = () => {
-
-  }
-
   return (
     <section
       id="home"
@@ -215,46 +210,7 @@ export default function HeroSection() {
       {/* Cursor-reactive dot field */}
       <DotGrid />
 
-      {/* Top bar */}
-      <div className="flex items-center justify-between pt-8 z-10">
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="text-xs tracking-[0.18em] uppercase"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          Portfolio.2026
-        </motion.span>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex items-center gap-2.5"
-        >
-          <span
-            className="blink rounded-full shrink-0"
-            style={{
-              width: '7px',
-              height: '7px',
-              display: 'inline-block',
-              backgroundColor: '#22c55e',
-              boxShadow: '0 0 8px rgba(34,197,94,0.6)',
-            }}
-          />
-          <span className="text-xs tracking-[0.15em] uppercase" style={{ color: 'var(--text-muted)' }}>
-            Open to Full-Time Opportunities
-          </span>
-        </motion.div>
-      </div>
-
-      {/* Top divider */}
-      <div className="mt-4 z-10">
-        <DrawLine delay={0.3} />
-      </div>
-
-      {/* Main title block — pinned to bottom of the flex-1 area */}
+      {/* ── Title block — pinned to bottom of flex-1 area */}
       <div className="flex-1 flex flex-col justify-end pb-3 z-10">
         <motion.p
           initial={{ opacity: 0 }}
@@ -293,24 +249,8 @@ export default function HeroSection() {
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 1.15 }}
         className="z-10 py-6 grid grid-cols-1 md:grid-cols-3 items-center gap-6 md:gap-4"
       >
-        {/* Identity */}
-        <div>
-          <p className="text-xs tracking-[0.15em] mb-1.5" style={{ color: 'var(--text-muted)' }}>
-            Hey there, I&apos;am
-          </p>
-          <p className="font-medium tracking-wide" style={{ color: 'var(--accent)', fontSize: '0.95rem' }}>
-            Rayala Viswanath
-          </p>
-        </div>
-
-        {/* Tagline */}
-        <p className="font-cormorant text-lg md:text-center" style={{ color: 'var(--text-muted)', lineHeight: 1.45 }}>
-          Building scalable production grade
-          <br className="hidden md:block" /> AI web platforms.
-        </p>
-
-        {/* Socials + Resume */}
-        <div className="flex items-center gap-5 md:justify-end">
+        {/* Socials — left */}
+        <div className="flex items-center gap-5">
           <Magnetic>
             <motion.a
               href="https://github.com/Rayala07"
@@ -338,17 +278,29 @@ export default function HeroSection() {
               <LinkedinIcon />
             </motion.a>
           </Magnetic>
+        </div>
 
+        {/* Tagline — center */}
+        <p className="font-cormorant text-lg md:text-center" style={{ color: 'var(--text-muted)', lineHeight: 1.45 }}>
+          Building scalable production grade
+          <br className="hidden md:block" /> AI web platforms.
+        </p>
+
+        {/* Resume — right */}
+        <div className="flex items-center md:justify-end">
           <Magnetic strength={0.25}>
-            <motion.button
+            <motion.a
+              href="https://drive.google.com/file/d/1ZR95R-yNbPbdzfeKz90UvYtjBAWC0FXC/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
               initial={{ borderColor: '#1A1A1A', color: '#A0A0A0', backgroundColor: 'transparent' }}
               whileHover={{ backgroundColor: '#F5F3F0', color: '#050505', borderColor: '#F5F3F0' }}
               transition={{ duration: 0.22 }}
-              style={{ cursor: 'pointer', fontSize: '0.72rem' }}
+              style={{ fontSize: '0.72rem', textDecoration: 'none', display: 'inline-block' }}
               className="tracking-[0.12em] uppercase border px-5 py-2.5"
             >
               Resume →
-            </motion.button>
+            </motion.a>
           </Magnetic>
         </div>
       </motion.div>

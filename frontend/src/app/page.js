@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
 import ProjectCard from '@/components/ProjectCard';
+import Navbar from '@/components/Navbar';
 
 export default function PortfolioSinglePage() {
     useEffect(() => {
@@ -43,6 +44,7 @@ export default function PortfolioSinglePage() {
 
     return (
         <main className="flex flex-col w-full relative">
+            <Navbar />
             <HeroSection />
             <AboutSection />
             <ProjectCard 
