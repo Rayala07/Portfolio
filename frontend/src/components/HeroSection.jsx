@@ -3,126 +3,184 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'motion/react';
 
-const GithubIcon   = () => <i className="hn hn-github text-3xl" />;
+const GithubIcon = () => <i className="hn hn-github text-3xl" />;
 const LinkedinIcon = () => <i className="hn hn-linkedin text-3xl" />;
 
-// ── Dot grid — dots repel from cursor; displaced dots glow lavender
 const DotGrid = () => {
   const canvasRef = useRef(null);
-  const mouse = useRef({ x: -9999, y: -9999 });
-  const dots = useRef(null);
-  const animRef = useRef(null);
+  const mouseRef  = useRef({ x: -9999, y: -9999 });
+  const velRef    = useRef({ x: 0, y: 0 });
+  const dotsRef   = useRef(null);
+  const animRef   = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    const SPACING = 30;
-    const DOT_R = 1.1;
-    const REPEL_R = 115;
-    const MAX_FORCE = 24;
-    const LERP = 0.1;
+    const SPACING   = 30;
+    const DOT_R     = 1.1;
+    const REPEL_R   = 150;
+    const MAX_REPEL = 26;
+    // Spring constants — these together produce the slime feel:
+    // low stiffness = lazy acceleration (lag), high friction = viscous damping (no wild oscillation)
+    const STIFFNESS = 0.08;
+    const FRICTION  = 0.88;
+    // Soft-floor for repulsion direction: prevents flicker when cursor sits directly on a dot
+    const MIN_DIST  = 6;
 
     const init = () => {
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = canvas.offsetWidth * dpr;
+      canvas.width  = canvas.offsetWidth  * dpr;
       canvas.height = canvas.offsetHeight * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const cols = Math.ceil(canvas.offsetWidth / SPACING) + 1;
-      const rows = Math.ceil(canvas.offsetHeight / SPACING) + 1;
-      dots.current = Array.from({ length: rows }, () =>
-        Array.from({ length: cols }, () => ({ ox: 0, oy: 0 }))
+      const W    = canvas.offsetWidth;
+      const H    = canvas.offsetHeight;
+      const cols = Math.ceil(W / SPACING) + 2;
+      const rows = Math.ceil(H / SPACING) + 2;
+      dotsRef.current = Array.from({ length: rows }, (_, r) =>
+        Array.from({ length: cols }, (_, c) => ({
+          ox: 0, oy: 0,
+          vx: 0, vy: 0,   // spring velocity — carries momentum between frames
+          phase:    (r * 0.28 + c * 0.19) + Math.random() * 0.4,
+          freqMult: 0.50 + Math.random() * 0.30,
+          ampR:     0.14 + Math.random() * 0.08,
+          ampA:     0.035 + Math.random() * 0.020,
+        }))
       );
     };
 
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+    const draw = (ts) => {
+      animRef.current = requestAnimationFrame(draw);
+      const grid = dotsRef.current;
+      if (!grid) return;
 
-      const grid = dots.current;
-      if (!grid) { animRef.current = requestAnimationFrame(draw); return; }
+      const t    = ts * 0.001;
+      const W    = canvas.offsetWidth;
+      const H    = canvas.offsetHeight;
+      ctx.clearRect(0, 0, W, H);
 
-      const mx = mouse.current.x;
-      const my = mouse.current.y;
+      const mx     = mouseRef.current.x;
+      const my     = mouseRef.current.y;
+      const active = mx > -9000;
+      const rows   = grid.length;
+      const cols   = grid[0].length;
+
+      // Center the grid so it sits symmetrically within the viewport
+      const startX = (W - (cols - 1) * SPACING) / 2;
+      const startY = (H - (rows - 1) * SPACING) / 2;
+
+      const speed    = Math.sqrt(velRef.current.x ** 2 + velRef.current.y ** 2);
+      const dynForce = MAX_REPEL * (1 + Math.min(speed * 0.025, 0.40));
+
       const displaced = [];
 
-      // Pass 1 — update offsets + draw resting dots
-      ctx.fillStyle = 'rgba(245, 243, 240, 0.1)';
-
-      for (let r = 0; r < grid.length; r++) {
-        for (let c = 0; c < grid[0].length; c++) {
-          const bx = c * SPACING;
-          const by = r * SPACING;
-          const dx = bx - mx;
-          const dy = by - my;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const d  = grid[r][c];
+          const bx = startX + c * SPACING;
+          const by = startY + r * SPACING;
           let tx = 0, ty = 0;
-          if (dist < REPEL_R && dist > 0) {
-            // Linear falloff — uniform push across the full radius → clean circular ring
-            const s = (1 - dist / REPEL_R) * MAX_FORCE;
-            tx = (dx / dist) * s;
-            ty = (dy / dist) * s;
+
+          if (active) {
+            const dx   = bx - mx;
+            const dy   = by - my;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < REPEL_R) {
+              const norm = 1 - dist / REPEL_R;
+              // Smoothstep S-curve: smooth from 0 at edge to 1 at center.
+              // Continuous derivative (no hard cliff) → clean, even circular push.
+              const s    = norm * norm * (3 - 2 * norm) * dynForce;
+              // effD adds MIN_DIST in quadrature: keeps direction stable even when
+              // cursor is nearly on top of a dot (prevents random scatter)
+              const effD = Math.sqrt(dx * dx + dy * dy + MIN_DIST * MIN_DIST);
+              tx = (dx / effD) * s;
+              ty = (dy / effD) * s;
+            }
           }
 
-          grid[r][c].ox += (tx - grid[r][c].ox) * LERP;
-          grid[r][c].oy += (ty - grid[r][c].oy) * LERP;
+          // Spring integration: vx accumulates force, FRICTION drains it each frame.
+          // Dots have momentum → they lag, overshoot slightly, and trail — the slime feel.
+          // Moving cursor fast: leading dots pushed hard, trailing dots still carry outward
+          // velocity after cursor passes → elongated "slime smear" in direction of travel.
+          d.vx += (tx - d.ox) * STIFFNESS;
+          d.vy += (ty - d.oy) * STIFFNESS;
+          d.vx *= FRICTION;
+          d.vy *= FRICTION;
+          d.ox += d.vx;
+          d.oy += d.vy;
 
-          const mag = Math.sqrt(grid[r][c].ox ** 2 + grid[r][c].oy ** 2);
-          const x = bx + grid[r][c].ox;
-          const y = by + grid[r][c].oy;
+          const x   = bx + d.ox;
+          const y   = by + d.oy;
+          const mag = Math.sqrt(d.ox * d.ox + d.oy * d.oy);
 
-          if (mag > 1.5) {
-            displaced.push({ x, y, mag });
+          // Diagonal breathing wave — idle organic life
+          const wave    = Math.sin(t * d.freqMult + d.phase);
+          const breathR = DOT_R * (1 + d.ampR * wave);
+          const baseA   = 0.065 + d.ampA * (wave + 1);
+
+          if (mag > 2.5) {
+            displaced.push({ x, y, mag, breathR });
           } else {
+            ctx.fillStyle = `rgba(245,243,240,${Math.max(0.035, baseA).toFixed(4)})`;
             ctx.beginPath();
-            ctx.arc(x, y, DOT_R, 0, Math.PI * 2);
+            ctx.arc(x, y, Math.max(0.3, breathR), 0, Math.PI * 2);
             ctx.fill();
           }
         }
       }
 
-      // Pass 2 — single unified ambient glow at cursor position
-      // One smooth radial light source looks natural; dozens of per-dot halos look like floating stars
-      if (mx > -100) {
-        const ambientR = REPEL_R * 1.1;
-        const ambient = ctx.createRadialGradient(mx, my, 0, mx, my, ambientR);
-        ambient.addColorStop(0,   'rgba(168, 155, 242, 0.13)');
-        ambient.addColorStop(0.3, 'rgba(168, 155, 242, 0.06)');
-        ambient.addColorStop(0.7, 'rgba(168, 155, 242, 0.015)');
-        ambient.addColorStop(1,   'rgba(168, 155, 242, 0)');
-        ctx.fillStyle = ambient;
+      // Ambient lavender glow at cursor
+      if (active) {
+        const ar = REPEL_R * 1.2;
+        const g  = ctx.createRadialGradient(mx, my, 0, mx, my, ar);
+        g.addColorStop(0,    'rgba(168,155,242,0.15)');
+        g.addColorStop(0.35, 'rgba(168,155,242,0.06)');
+        g.addColorStop(1,    'rgba(168,155,242,0)');
+        ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.arc(mx, my, ambientR, 0, Math.PI * 2);
+        ctx.arc(mx, my, ar, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Pass 3 — displaced dots: solid lavender, opacity scales with displacement depth
-      for (const { x, y, mag } of displaced) {
-        const t = Math.min(mag / MAX_FORCE, 1);
-        ctx.fillStyle = `rgba(168, 155, 242, ${0.28 + t * 0.62})`;
+      // Displaced dots — lavender, fade by displacement depth
+      for (const { x, y, mag, breathR } of displaced) {
+        const p = Math.min(mag / MAX_REPEL, 1);
+        ctx.fillStyle = `rgba(168,155,242,${(0.25 + p * 0.75).toFixed(4)})`;
         ctx.beginPath();
-        ctx.arc(x, y, DOT_R + t * 0.5, 0, Math.PI * 2);
+        ctx.arc(x, y, breathR + p * 1.0, 0, Math.PI * 2);
         ctx.fill();
       }
-
-      animRef.current = requestAnimationFrame(draw);
     };
 
     const onMove = (e) => {
       const rect = canvas.getBoundingClientRect();
-      mouse.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      const nx = e.clientX - rect.left;
+      const ny = e.clientY - rect.top;
+      velRef.current = {
+        x: velRef.current.x * 0.65 + (nx - mouseRef.current.x) * 0.35,
+        y: velRef.current.y * 0.65 + (ny - mouseRef.current.y) * 0.35,
+      };
+      mouseRef.current = { x: nx, y: ny };
+    };
+
+    const onLeave = () => {
+      mouseRef.current = { x: -9999, y: -9999 };
+      velRef.current   = { x: 0, y: 0 };
     };
 
     init();
-    draw();
-    window.addEventListener('resize', init);
-    window.addEventListener('mousemove', onMove);
+    animRef.current = requestAnimationFrame(draw);
+    window.addEventListener('resize',     init);
+    window.addEventListener('mousemove',  onMove);
+    window.addEventListener('mouseleave', onLeave);
 
     return () => {
       cancelAnimationFrame(animRef.current);
-      window.removeEventListener('resize', init);
-      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('resize',     init);
+      window.removeEventListener('mousemove',  onMove);
+      window.removeEventListener('mouseleave', onLeave);
     };
   }, []);
 
@@ -138,15 +196,15 @@ const DotGrid = () => {
 // ── Magnetic wrapper — element springs gently toward the cursor
 const Magnetic = ({ children, strength = 0.35 }) => {
   const ref = useRef(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 350, damping: 22 });
-  const sy = useSpring(y, { stiffness: 350, damping: 22 });
+  const x   = useMotionValue(0);
+  const y   = useMotionValue(0);
+  const sx  = useSpring(x, { stiffness: 350, damping: 22 });
+  const sy  = useSpring(y, { stiffness: 350, damping: 22 });
 
   const onMove = (e) => {
     const r = ref.current.getBoundingClientRect();
-    x.set((e.clientX - (r.left + r.width / 2)) * strength);
-    y.set((e.clientY - (r.top + r.height / 2)) * strength);
+    x.set((e.clientX - (r.left + r.width  / 2)) * strength);
+    y.set((e.clientY - (r.top  + r.height / 2)) * strength);
   };
 
   return (
@@ -207,23 +265,13 @@ export default function HeroSection() {
       className="h-screen w-full flex flex-col relative overflow-hidden"
       style={{ padding: '0 clamp(1.5rem, 5vw, 4rem)' }}
     >
-      {/* Cursor-reactive dot field */}
+      {/* Breathing membrane dot field */}
       <DotGrid />
 
       {/* ── Title block — pinned to bottom of flex-1 area */}
       <div className="flex-1 flex flex-col justify-end pb-3 z-10">
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.45 }}
-          className="text-xs tracking-[0.2em] uppercase mb-5"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          01 / Identity
-        </motion.p>
-
         <h1
-          className="font-space-grotesk tracking-tight"
+          className="font-syne tracking-tight"
           style={{
             fontSize: 'clamp(4rem, 11vw, 9rem)',
             lineHeight: 0.9,
@@ -293,8 +341,8 @@ export default function HeroSection() {
               href="https://drive.google.com/file/d/1ZR95R-yNbPbdzfeKz90UvYtjBAWC0FXC/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
-              initial={{ borderColor: '#1A1A1A', color: '#A0A0A0', backgroundColor: 'transparent' }}
-              whileHover={{ backgroundColor: '#F5F3F0', color: '#050505', borderColor: '#F5F3F0' }}
+              initial={{ borderColor: '#1A1A1A', color: '#A0A0A0', backgroundColor: 'rgba(0,0,0,0)' }}
+              whileHover={{ backgroundColor: '#A89BF2', color: '#050505', borderColor: '#A89BF2' }}
               transition={{ duration: 0.22 }}
               style={{ fontSize: '0.72rem', textDecoration: 'none', display: 'inline-block' }}
               className="tracking-[0.12em] uppercase border px-5 py-2.5"

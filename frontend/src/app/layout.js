@@ -1,6 +1,8 @@
 import "./globals.css";
 import "@hackernoon/pixel-icon-library/fonts/iconfont.css";
 import CustomCursor from "@/components/CustomCursor";
+import ScrollProgress from "@/components/ScrollProgress";
+import SmoothScroll from "@/components/SmoothScroll";
 
 export const metadata = {
   title: "Rayala Viswanath | Fullstack AI Engineer",
@@ -17,7 +19,8 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-full flex flex-col">
         <CustomCursor />
-        {children}
+        <ScrollProgress />
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );

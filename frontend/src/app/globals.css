@@ -1,5 +1,5 @@
 /* Google Fonts must be imported before everything else */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@1,400;1,600&family=Space+Grotesk:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@1,400;1,600&family=Space+Grotesk:wght@600;700&family=Plus+Jakarta+Sans:wght@700;800&family=Great+Vibes&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -77,6 +77,18 @@ body::after {
   .font-space-grotesk {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
+  }
+
+  /* Great Vibes — handwritten script for name display */
+  .font-great-vibes {
+    font-family: 'Great Vibes', cursive;
+    font-weight: 400;
+  }
+
+  /* Plus Jakarta Sans — premium display font for hero title */
+  .font-syne {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
   }
 
 }
