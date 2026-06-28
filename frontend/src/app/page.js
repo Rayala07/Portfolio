@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
+import SkillsSection from '@/components/Skills/Skills';
 import Navbar from '@/components/Navbar';
 import { getLenisInstance } from '@/lib/lenis-instance';
 
@@ -14,11 +15,10 @@ export default function PortfolioSinglePage() {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     const id = entry.target.id;
-                    const newUrl = id === 'home' ? '/' : `/${id}`;
-                    
-                    if (window.location.pathname !== newUrl) {
-                        window.history.replaceState(null, '', newUrl);
-                    }
+                    // Hash-based URLs load from / and are handled client-side,
+                    // so reloading /#skills never hits a missing route.
+                    const newUrl = id === 'home' ? '/' : `/#${id}`;
+                    window.history.replaceState(null, '', newUrl);
                 }
             });
         }, {
@@ -27,10 +27,11 @@ export default function PortfolioSinglePage() {
 
         sections.forEach((section) => observer.observe(section));
 
-        const currentPath = window.location.pathname.replace('/', '');
-        if (currentPath) {
+        // On reload, read the hash and scroll to the matching section
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
             setTimeout(() => {
-                const targetElement = document.getElementById(currentPath);
+                const targetElement = document.getElementById(hash);
                 if (targetElement) {
                     const lenis = getLenisInstance();
                     lenis ? lenis.scrollTo(targetElement) : targetElement.scrollIntoView({ behavior: 'smooth' });
@@ -46,6 +47,7 @@ export default function PortfolioSinglePage() {
             <Navbar />
             <HeroSection />
             <AboutSection />
+            <SkillsSection />
         </main>
     );
 }

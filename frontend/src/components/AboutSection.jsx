@@ -71,15 +71,16 @@ export default function AboutSection() {
           {/* "Hey, I'm" — Cormorant Garamond italic, same as hero tagline */}
           <p
             className="font-cormorant mb-1"
-            style={{ fontSize: '1.35rem', color: 'var(--text-muted)' }}
+            style={{ fontSize: '1.35rem', color: 'var(--accent)' }}
           >
             Hey, I&apos;m
           </p>
 
-          {/* Name — Plus Jakarta Sans 800, same family as hero title */}
+          {/* Name — Bricolage Grotesque */}
           <h2
-            className="font-syne tracking-tight"
+            className="font-bricolage tracking-tight"
             style={{
+              fontWeight: 700,
               fontSize: 'clamp(3rem, 5.5vw, 5rem)',
               lineHeight: 0.95,
               color: 'var(--text-primary)',
@@ -97,6 +98,7 @@ export default function AboutSection() {
               maxWidth: '54rem',
               fontSize: 'clamp(1.15rem, 1.9vw, 1.5rem)',
               lineHeight: 1.75,
+              fontWeight: 500,
             }}
           >
             {reducedMotion ? (

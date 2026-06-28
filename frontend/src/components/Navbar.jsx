@@ -161,7 +161,7 @@ const ContactButton = () => {
           transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         />
 
-        <span style={{ position: 'relative', zIndex: 1 }}>Contact</span>
+        <span style={{ position: 'relative', zIndex: 1 }}>Contact Me</span>
 
         {/* Arrow slides right on hover */}
         <motion.span
