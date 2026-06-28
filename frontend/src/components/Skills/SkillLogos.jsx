@@ -114,24 +114,15 @@ export function ReactLogo({ size = 64 }) {
 }
 
 export function NextjsLogo({ size = 64 }) {
-  // Next.js "N" mark: the bold N with a gradient fade from white to transparent (the actual brand mark)
+  // Uses the brand logo from /public
   return (
-    <svg width={size} height={size} viewBox="0 0 80 80" aria-hidden="true">
-      <rect width="80" height="80" fill="#000" rx="6" />
-      <defs>
-        <linearGradient id="njs-g" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%"   stopColor="white" stopOpacity="1" />
-          <stop offset="100%" stopColor="white" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <text
-        x="10" y="65"
-        fill="url(#njs-g)"
-        fontSize="64"
-        fontWeight="900"
-        fontFamily="'Arial Black', Arial, sans-serif"
-      >N</text>
-    </svg>
+    <img
+      src="/nextjs-logo.png"
+      alt="Next.js"
+      width={size}
+      height={size}
+      style={{ objectFit: 'contain', display: 'block' }}
+    />
   );
 }
 
@@ -175,15 +166,15 @@ export function NodejsLogo({ size = 64 }) {
 }
 
 export function ExpressLogo({ size = 64 }) {
-  // Express.js: minimal white wordmark on transparent (card provides bg)
+  // Uses the brand logo from /public
   return (
-    <svg width={size} height={size} viewBox="0 0 80 80" aria-hidden="true">
-      <text x="40" y="44" textAnchor="middle"
-        fill="rgba(245,243,240,0.88)"
-        fontSize="15" fontWeight="600"
-        fontFamily="Arial, Helvetica, sans-serif"
-        letterSpacing="-0.3">express</text>
-    </svg>
+    <img
+      src="/expressjs-logo.png"
+      alt="Express.js"
+      width={size}
+      height={size}
+      style={{ objectFit: 'contain', display: 'block' }}
+    />
   );
 }
 
@@ -229,16 +220,15 @@ export function GithubLogo({ size = 64 }) {
 }
 
 export function PostmanLogo({ size = 64 }) {
-  // Postman: orange background with the send/arrow mark in white
+  // Uses the brand logo from /public
   return (
-    <svg width={size} height={size} viewBox="0 0 80 80" aria-hidden="true">
-      <rect width="80" height="80" fill="#FF6C37" rx="6" />
-      {/* Postman "P" mark: a circle + stem + diagonal */}
-      <circle cx="40" cy="32" r="16" fill="none" stroke="white" strokeWidth="5" />
-      <line x1="40" y1="48" x2="40" y2="65" stroke="white" strokeWidth="5" strokeLinecap="round" />
-      {/* The distinctive diagonal slash through the circle */}
-      <line x1="28" y1="20" x2="52" y2="44" stroke="white" strokeWidth="4.5" strokeLinecap="round" />
-    </svg>
+    <img
+      src="/postman-logo.png"
+      alt="Postman"
+      width={size}
+      height={size}
+      style={{ objectFit: 'contain', display: 'block' }}
+    />
   );
 }
 
@@ -266,78 +256,52 @@ export function MongodbLogo({ size = 64 }) {
 }
 
 export function PostgresqlLogo({ size = 64 }) {
-  // PostgreSQL: simplified but recognizable elephant head
+  // Uses the brand logo from /public
   return (
-    <svg width={size} height={size} viewBox="0 0 80 80" aria-hidden="true">
-      {/* Main head */}
-      <ellipse cx="44" cy="36" rx="22" ry="24" fill="#336791" />
-      {/* Left ear */}
-      <ellipse cx="24" cy="28" rx="10" ry="13" fill="#336791" />
-      <ellipse cx="25" cy="28" rx="6.5" ry="9" fill="#1a4a72" opacity="0.5" />
-      {/* Trunk — curls down then slightly right */}
-      <path d="M22 40 Q10 52 12 66 Q14 72 20 70 Q19 62 22 56"
-        stroke="#336791" strokeWidth="10" fill="none" strokeLinecap="round" />
-      {/* White eye */}
-      <circle cx="40" cy="28" r="4.5" fill="white" />
-      <circle cx="41" cy="28" r="2.2" fill="#0d2137" />
-      {/* Tusk */}
-      <path d="M30 54 Q26 64 34 66"
-        stroke="#F5F3F0" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.7" />
-    </svg>
+    <img
+      src="/postgresql-logo.png"
+      alt="PostgreSQL"
+      width={size}
+      height={size}
+      style={{ objectFit: 'contain', display: 'block' }}
+    />
   );
 }
 
 export function MysqlLogo({ size = 64 }) {
-  // MySQL: the distinctive dolphin in blue
+  // Uses the brand logo from /public
   return (
-    <svg width={size} height={size} viewBox="0 0 80 80" aria-hidden="true">
-      {/* Body */}
-      <path d="M8 50 Q8 30 28 22 Q48 14 62 26 Q72 34 68 50
-               Q64 60 50 62 Q28 66 8 50 Z" fill="#00618A" />
-      {/* Dorsal fin */}
-      <path d="M44 22 Q52 8 60 16 Q54 20 48 24" fill="#00618A" />
-      {/* Tail */}
-      <path d="M8 50 Q2 46 2 38 Q6 32 12 42" fill="#00618A" />
-      {/* Tail flukes */}
-      <path d="M2 38 Q-2 30 4 28 Q8 34 12 42" fill="#F29111" opacity="0.8" />
-      {/* Rostrum */}
-      <path d="M62 36 Q76 34 78 40 Q74 46 62 44" fill="#00618A" />
-      {/* Eye */}
-      <circle cx="54" cy="30" r="3.5" fill="white" />
-      <circle cx="55" cy="30" r="1.8" fill="#0d2137" />
-    </svg>
+    <img
+      src="/mysql-logo.png"
+      alt="MySQL"
+      width={size}
+      height={size}
+      style={{ objectFit: 'contain', display: 'block' }}
+    />
   );
 }
 
 export function RedisLogo({ size = 64 }) {
-  // Redis: the distinctive stacked colored prisms (simplified isometric cubes)
+  // Uses the brand logo from /public
   return (
-    <svg width={size} height={size} viewBox="0 0 80 80" aria-hidden="true">
-      {/* Bottom stack (darker) */}
-      <polygon points="40,60 64,48 40,36 16,48" fill="#A41E11" />
-      <polygon points="16,48 40,36 40,60" fill="#7A1209" />
-      <polygon points="64,48 40,36 40,60" fill="#912018" />
-      {/* Middle stack */}
-      <polygon points="40,44 64,32 40,20 16,32" fill="#D82C20" />
-      <polygon points="16,32 40,20 40,44" fill="#A41E11" />
-      <polygon points="64,32 40,20 40,44" fill="#C42B1C" />
-      {/* Top face */}
-      <polygon points="16,32 40,20 64,32 40,44" fill="#FF4438" opacity="0.1" />
-      <polygon points="16,16 40,4 64,16 40,28" fill="#FF4438" />
-      <polygon points="16,16 40,4 40,28" fill="#D82C20" />
-      <polygon points="64,16 40,4 40,28" fill="#C42B1C" />
-    </svg>
+    <img
+      src="/redis-logo.png"
+      alt="Redis"
+      width={size}
+      height={size}
+      style={{ objectFit: 'contain', display: 'block' }}
+    />
   );
 }
 
 export function PineconeLogo({ size = 64 }) {
-  // Pinecone: stylized pine tree / triangle mark
   return (
     <svg width={size} height={size} viewBox="0 0 80 80" aria-hidden="true">
-      {/* Canopy layers */}
-      <polygon points="40,6 56,28 48,28 62,46 52,46 60,62 20,62 28,46 18,46 32,28 24,28" fill="#00D4AA" />
-      {/* Trunk */}
-      <rect x="36" y="62" width="8" height="10" rx="2" fill="#00D4AA" opacity="0.6" />
+      <text x="40" y="44" textAnchor="middle"
+        fill="rgba(245,243,240,0.82)"
+        fontSize="13" fontWeight="600"
+        fontFamily="'Space Grotesk', Arial, sans-serif"
+        letterSpacing="0.3">Pinecone</text>
     </svg>
   );
 }
@@ -345,47 +309,28 @@ export function PineconeLogo({ size = 64 }) {
 // ─────────────────────────────── CLOUD & DEVOPS ──────────────────────────────
 
 export function DockerLogo({ size = 64 }) {
-  // Docker: Moby the whale with stacked container boxes on its back
+  // Uses the brand logo from /public
   return (
-    <svg width={size} height={size} viewBox="0 0 80 80" aria-hidden="true">
-      {/* Whale body */}
-      <path
-        d="M8 54 Q8 40 22 36 Q36 32 52 36 Q64 38 67 48
-           Q72 48 75 51 Q77 54 74 57 Q70 60 66 58
-           Q63 60 58 60 L22 60 Q14 60 8 54 Z"
-        fill="#2496ED"
-      />
-      {/* Tail */}
-      <path d="M8 54 Q4 50 3 44 Q7 42 12 50" fill="#2496ED" />
-      {/* Water spout */}
-      <path d="M18 36 Q15 22 20 14 Q23 8 26 12 Q20 18 24 36"
-        fill="#2496ED" opacity="0.7" />
-      {/* Containers — 5 white boxes on the back */}
-      <rect x="22" y="24" width="12" height="10" rx="2" fill="white" opacity="0.92" />
-      <rect x="36" y="24" width="12" height="10" rx="2" fill="white" opacity="0.92" />
-      <rect x="50" y="24" width="12" height="10" rx="2" fill="white" opacity="0.92" />
-      <rect x="22" y="13" width="12" height="10" rx="2" fill="white" opacity="0.92" />
-      <rect x="36" y="13" width="12" height="10" rx="2" fill="white" opacity="0.92" />
-    </svg>
+    <img
+      src="/docker-logo.png"
+      alt="Docker"
+      width={size}
+      height={size}
+      style={{ objectFit: 'contain', display: 'block' }}
+    />
   );
 }
 
 export function AwsLogo({ size = 64 }) {
-  // AWS: the iconic "amazon web services" orange wordmark + smile arc
+  // Uses the brand logo from /public
   return (
-    <svg width={size} height={size} viewBox="0 0 80 80" aria-hidden="true">
-      {/* "AWS" bold text */}
-      <text x="40" y="44" textAnchor="middle"
-        fill="#FF9900" fontSize="28" fontWeight="900"
-        fontFamily="'Arial Black', Arial, sans-serif">AWS</text>
-      {/* Orange smile arc (the Amazon arrow/smile) */}
-      <path d="M16 56 Q40 72 64 56"
-        stroke="#FF9900" strokeWidth="4.5" fill="none" strokeLinecap="round" />
-      {/* Arrow tip on the right of the smile */}
-      <path d="M60 56 L64 56 L62 52"
-        stroke="#FF9900" strokeWidth="3.5" fill="none"
-        strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <img
+      src="/aws-logo.png"
+      alt="AWS"
+      width={size}
+      height={size}
+      style={{ objectFit: 'contain', display: 'block' }}
+    />
   );
 }
 
