@@ -124,7 +124,7 @@ const ContactButton = () => {
         href="#contact"
         onClick={handleClick}
         animate={{
-          borderColor: hovered ? 'rgba(168,155,242,0.9)' : 'rgba(168,155,242,0.38)',
+          borderColor: hovered ? 'rgba(168,155,242,0.9)' : 'rgba(168,155,242,0)',
         }}
         transition={{ duration: 0.25 }}
         style={{
@@ -135,7 +135,7 @@ const ContactButton = () => {
           gap: '7px',
           padding: '0.5rem 1.25rem',
           borderRadius: 0, // sharp edges
-          border: '1px solid rgba(168,155,242,0.38)',
+          border: '1px solid rgba(168,155,242,0)',
           fontSize: '0.68rem',
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
@@ -161,17 +161,7 @@ const ContactButton = () => {
           transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         />
 
-        <span style={{ position: 'relative', zIndex: 1 }}>Contact Me</span>
-
-        {/* Arrow slides right on hover */}
-        <motion.span
-          aria-hidden="true"
-          animate={{ x: hovered ? 3 : 0, opacity: hovered ? 1 : 0.5 }}
-          transition={{ duration: 0.2 }}
-          style={{ position: 'relative', zIndex: 1, display: 'inline-block' }}
-        >
-          →
-        </motion.span>
+        <span style={{ position: 'relative', zIndex: 1 }}>CONTACT</span>
       </motion.a>
     </motion.div>
   );
@@ -243,7 +233,7 @@ export default function Navbar() {
           backdropFilter: 'blur(24px) saturate(180%)',
           WebkitBackdropFilter: 'blur(24px) saturate(180%)',
           border: '1px solid rgba(255,255,255,0.09)',
-          borderRadius: '14px',
+          borderRadius: 0, // sharp edges
           boxShadow: [
             '0 8px 48px rgba(0,0,0,0.55)',
             'inset 0 1px 0 rgba(255,255,255,0.08)',

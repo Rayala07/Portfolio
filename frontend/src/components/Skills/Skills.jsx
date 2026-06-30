@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useInView, useReducedMotion, motion } from 'motion/react';
+import { useInView, useReducedMotion, motion, AnimatePresence } from 'motion/react';
 import { CATEGORIES, SKILLS } from './skills.data';
 import SkillTileGrid from './SkillTileGrid';
 import AppliedAIList from './AppliedAIList';
@@ -102,19 +102,45 @@ export default function SkillsSection() {
         })}
       </div>
 
-      {/* ── Content area ── */}
-      {isAI ? (
-        <AppliedAIList
-          skills={visibleSkills}
-          hasEntered={hasEntered}
-        />
-      ) : (
-        <SkillTileGrid
-          skills={visibleSkills}
-          category={selected}
-          hasEntered={hasEntered}
-        />
-      )}
+      {/* ── Content area — crossfade when switching between grid and AI list ── */}
+      <AnimatePresence mode="wait" initial={false}>
+        {isAI ? (
+          <motion.div
+            key="ai-panel"
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{
+              opacity: 0,
+              y: prefersReducedMotion ? 0 : -8,
+              transition: { duration: 0.17, ease: 'easeIn' },
+            }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <AppliedAIList
+              skills={visibleSkills}
+              hasEntered={hasEntered}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="grid-panel"
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{
+              opacity: 0,
+              y: prefersReducedMotion ? 0 : -8,
+              transition: { duration: 0.17, ease: 'easeIn' },
+            }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SkillTileGrid
+              skills={visibleSkills}
+              category={selected}
+              hasEntered={hasEntered}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hide scrollbar cross-browser */}
       <style>{`

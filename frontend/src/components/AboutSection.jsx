@@ -93,11 +93,12 @@ export default function AboutSection() {
         {/* ── Paragraph — centred both axes, Majd-style reveal ── */}
         <div className="flex-1 flex items-center justify-center">
           <p
+            className="font-bricolage"
             style={{
               textAlign: 'center',
               maxWidth: '54rem',
-              fontSize: 'clamp(1.15rem, 1.9vw, 1.5rem)',
-              lineHeight: 1.75,
+              fontSize: 'clamp(1.35rem, 2.3vw, 1.85rem)',
+              lineHeight: 1.65,
               fontWeight: 500,
             }}
           >

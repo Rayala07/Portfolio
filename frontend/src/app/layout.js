@@ -1,7 +1,6 @@
 import "./globals.css";
 import "@hackernoon/pixel-icon-library/fonts/iconfont.css";
 import CustomCursor from "@/components/CustomCursor";
-import ScrollProgress from "@/components/ScrollProgress";
 import SmoothScroll from "@/components/SmoothScroll";
 
 export const metadata = {
@@ -19,7 +18,6 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-full flex flex-col">
         <CustomCursor />
-        <ScrollProgress />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
