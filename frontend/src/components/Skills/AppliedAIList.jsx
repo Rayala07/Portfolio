@@ -44,7 +44,7 @@ function AppliedAIItem({ skill, index, hasEntered }) {
         alignItems:     'baseline',
         justifyContent: 'space-between',
         gap:            '24px',
-        padding:        'clamp(14px, 2.2vh, 22px) 0',
+        padding:        'clamp(9px, 1.5vh, 15px) 0',
       }}>
         {/* Index counter */}
         <span style={{
@@ -67,7 +67,7 @@ function AppliedAIItem({ skill, index, hasEntered }) {
           className="font-bricolage"
           style={{
             flex:          1,
-            fontSize:      'clamp(1.7rem, 2.8vw, 2.6rem)',
+            fontSize:      'clamp(1.4rem, 2.2vw, 2.1rem)',
             fontWeight:    300,
             letterSpacing: '-0.02em',
             lineHeight:    1,

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useInView, useReducedMotion, motion, AnimatePresence } from 'motion/react';
 import { CATEGORIES, SKILLS } from './skills.data';
 import SkillTileGrid from './SkillTileGrid';
 import AppliedAIList from './AppliedAIList';
+import { getLenisInstance } from '@/lib/lenis-instance';
 
 export default function SkillsSection() {
   const [selected, setSelected]     = useState(CATEGORIES[0]);
@@ -15,31 +16,57 @@ export default function SkillsSection() {
   const visibleSkills = SKILLS.filter((s) => s.category === selected);
   const isAI          = selected === 'Applied AI';
 
+  // After every tab switch the AnimatePresence exit briefly collapses
+  // the section height, which causes Lenis to cache a shorter scroll
+  // limit. Force a resize after the animation fully settles.
+  useEffect(() => {
+    const id = setTimeout(() => {
+      const lenis = getLenisInstance();
+      if (lenis) lenis.resize();
+    }, 500);
+    return () => clearTimeout(id);
+  }, [selected]);
+
   return (
     <section
       id="skills"
       ref={sectionRef}
       style={{
-        padding:       'clamp(5rem, 10vh, 8rem) clamp(1.5rem, 5vw, 4rem)',
+        padding:       'clamp(3.5rem, 7vh, 6rem) clamp(1.5rem, 5vw, 4rem)',
         minHeight:     '100vh',
         display:       'flex',
         flexDirection: 'column',
-        justifyContent:'center',
+        justifyContent:'flex-start',
         position:      'relative',
       }}
     >
-      {/* ── Eyebrow label ── */}
-      <p
-        className="font-cormorant"
-        style={{
-          fontSize:      '1.1rem',
-          color:         'var(--accent)',
-          letterSpacing: '0.02em',
-          marginBottom:  'clamp(1.8rem, 3.5vh, 2.8rem)',
-        }}
-      >
-        What I work with...
-      </p>
+      {/* ── Section heading ── */}
+      <div style={{ marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)' }}>
+        <p
+          className="font-cormorant"
+          style={{
+            fontSize:      '1.1rem',
+            color:         'var(--accent)',
+            letterSpacing: '0.02em',
+            marginBottom:  'clamp(0.8rem, 1.5vh, 1.2rem)',
+          }}
+        >
+          What I build with...
+        </p>
+        <h2
+          className="font-bricolage"
+          style={{
+            fontSize:      'clamp(3rem, 6.5vw, 6.5rem)',
+            fontWeight:    800,
+            letterSpacing: '-0.04em',
+            lineHeight:    0.9,
+            margin:        0,
+          }}
+        >
+          <span style={{ color: 'var(--accent)', display: 'block' }}>The</span>
+          <span style={{ color: 'var(--text-primary)', display: 'block' }}>Stack</span>
+        </h2>
+      </div>
 
       {/* ── Horizontal tab strip ── */}
       <div
@@ -48,7 +75,7 @@ export default function SkillsSection() {
           display:       'flex',
           alignItems:    'flex-end',
           gap:           0,
-          marginBottom:  'clamp(2.5rem, 5vh, 4rem)',
+          marginBottom:  'clamp(1.5rem, 3vh, 2.5rem)',
           borderBottom:  '1px solid rgba(255,255,255,0.08)',
           overflowX:     'auto',
           scrollbarWidth:'none',

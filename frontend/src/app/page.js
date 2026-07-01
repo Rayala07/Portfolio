@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
 import SkillsSection from '@/components/Skills/Skills';
+import ProjectsSection from '@/components/Projects/ProjectsSection';
 import Navbar from '@/components/Navbar';
 import { getLenisInstance } from '@/lib/lenis-instance';
 
@@ -48,6 +49,7 @@ export default function PortfolioSinglePage() {
             <HeroSection />
             <AboutSection />
             <SkillsSection />
+            <ProjectsSection />
         </main>
     );
 }
