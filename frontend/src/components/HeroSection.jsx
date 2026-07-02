@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'motion/react';
 
 const GithubIcon = () => <i className="hn hn-github text-3xl" />;
@@ -194,28 +194,63 @@ const DotGrid = () => {
 };
 
 // ── Magnetic wrapper — element springs gently toward the cursor
-const Magnetic = ({ children, strength = 0.35 }) => {
+function Magnetic({ children, strength = 0.5 }) {
   const ref = useRef(null);
-  const x   = useMotionValue(0);
-  const y   = useMotionValue(0);
-  const sx  = useSpring(x, { stiffness: 350, damping: 22 });
-  const sy  = useSpring(y, { stiffness: 350, damping: 22 });
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
 
-  const onMove = (e) => {
-    const r = ref.current.getBoundingClientRect();
-    x.set((e.clientX - (r.left + r.width  / 2)) * strength);
-    y.set((e.clientY - (r.top  + r.height / 2)) * strength);
+  const springX = useSpring(x, { stiffness: 150, damping: 15, mass: 0.5 });
+  const springY = useSpring(y, { stiffness: 150, damping: 15, mass: 0.5 });
+
+  const handlePointerMove = (e) => {
+    if (!ref.current) return;
+    const { clientX, clientY } = e;
+    const { height, width, left, top } = ref.current.getBoundingClientRect();
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+    x.set((clientX - centerX) * strength);
+    y.set((clientY - centerY) * strength);
+  };
+
+  const handlePointerLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return React.cloneElement(children, {
+    ref,
+    onPointerMove: handlePointerMove,
+    onPointerLeave: handlePointerLeave,
+    style: {
+      ...children.props.style,
+      x: springX,
+      y: springY,
+    },
+  });
+}
+
+function EmailCopyButton() {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText("developer.rayala@gmail.com");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <motion.div
-      ref={ref}
-      style={{ x: sx, y: sy, display: 'inline-flex' }}
-      onMouseMove={onMove}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
-    >
-      {children}
-    </motion.div>
+    <Magnetic strength={0.25}>
+      <motion.button
+        onClick={handleCopy}
+        initial={{ borderColor: '#1A1A1A', color: '#A0A0A0', backgroundColor: 'rgba(0,0,0,0)' }}
+        whileHover={{ backgroundColor: '#A89BF2', color: '#050505', borderColor: '#A89BF2' }}
+        transition={{ duration: 0.22 }}
+        style={{ fontSize: '0.72rem', display: 'inline-block' }}
+        className="tracking-[0.12em] uppercase border px-5 py-2.5 cursor-pointer"
+      >
+        {copied ? 'Copied!' : 'Email Me ↗'}
+      </motion.button>
+    </Magnetic>
   );
 };
 
@@ -334,8 +369,10 @@ export default function HeroSection() {
           <br className="hidden md:block" /> AI web platforms.
         </p>
 
-        {/* Resume — right */}
-        <div className="flex items-center md:justify-end">
+        {/* Buttons — right */}
+        <div className="flex items-center md:justify-end gap-4">
+          <EmailCopyButton />
+
           <Magnetic strength={0.25}>
             <motion.a
               href="https://drive.google.com/file/d/1gL-ziJTzkVin7no3dHpVQWUiPVB1LHyb/view?usp=sharing"

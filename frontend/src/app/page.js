@@ -13,7 +13,7 @@ import { getLenisInstance } from '@/lib/lenis-instance';
 export default function PortfolioSinglePage() {
     useEffect(() => {
         const sections = document.querySelectorAll('section[id]');
-        
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
