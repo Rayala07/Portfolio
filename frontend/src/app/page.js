@@ -5,6 +5,8 @@ import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
 import SkillsSection from '@/components/Skills/Skills';
 import ProjectsSection from '@/components/Projects/ProjectsSection';
+import AchievementsSection from '@/components/AchievementsSection';
+import ContactSection from '@/components/ContactSection';
 import Navbar from '@/components/Navbar';
 import { getLenisInstance } from '@/lib/lenis-instance';
 
@@ -50,6 +52,8 @@ export default function PortfolioSinglePage() {
             <AboutSection />
             <SkillsSection />
             <ProjectsSection />
+            <AchievementsSection />
+            <ContactSection />
         </main>
     );
 }

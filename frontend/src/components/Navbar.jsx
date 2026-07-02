@@ -89,7 +89,7 @@ const NavLink = ({ label, href, index, isActive }) => {
 };
 
 // ── CONTACT CTA — sharp edges, left-to-right lavender wipe on hover ───────────
-const ContactButton = () => {
+const ContactButton = ({ isActive }) => {
   const ref = useRef(null);
   const x   = useMotionValue(0);
   const y   = useMotionValue(0);
@@ -134,7 +134,7 @@ const ContactButton = () => {
           alignItems: 'center',
           gap: '7px',
           padding: '0.5rem 1.25rem',
-          borderRadius: 0, // sharp edges
+          borderRadius: 0,
           border: '1px solid rgba(168,155,242,0)',
           fontSize: '0.68rem',
           letterSpacing: '0.18em',
@@ -162,6 +162,24 @@ const ContactButton = () => {
         />
 
         <span style={{ position: 'relative', zIndex: 1 }}>CONTACT</span>
+
+        {/* Active underline — same style as NavLink */}
+        <motion.span
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            bottom: '2px',
+            left: '1.25rem',
+            right: '1.25rem',
+            height: '1px',
+            backgroundColor: 'var(--accent)',
+            transformOrigin: 'left center',
+            zIndex: 2,
+          }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: (isActive && !hovered) ? 1 : 0 }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        />
       </motion.a>
     </motion.div>
   );
@@ -180,10 +198,11 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Track which section is currently in view
+  // Track which section is currently in view (includes #contact)
   useEffect(() => {
-    const sections = NAV_LINKS
-      .map(l => document.getElementById(l.href.replace('#', '')))
+    const allHrefs = [...NAV_LINKS.map(l => l.href), '#contact'];
+    const sections = allHrefs
+      .map(h => document.getElementById(h.replace('#', '')))
       .filter(Boolean);
 
     const observer = new IntersectionObserver(
@@ -312,7 +331,7 @@ export default function Navbar() {
         </nav>
 
         {/* ── Right CTA ── */}
-        <ContactButton />
+        <ContactButton isActive={activeHref === '#contact'} />
       </motion.nav>
     </div>
   );
