@@ -190,7 +190,7 @@ function SpotlightCard({ item, hasEntered }) {
                 alignItems:    'center',
                 gap:           8,
                 padding:       '7px 18px',
-                borderRadius:  100,
+                borderRadius:  0,
                 border:        '1px solid rgba(168,155,242,0.3)',
                 background:    'rgba(168,155,242,0.07)',
                 boxShadow:     '0 0 22px rgba(168,155,242,0.1), inset 0 1px 0 rgba(255,255,255,0.05)',

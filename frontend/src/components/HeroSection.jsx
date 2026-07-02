@@ -338,7 +338,7 @@ export default function HeroSection() {
         <div className="flex items-center md:justify-end">
           <Magnetic strength={0.25}>
             <motion.a
-              href="https://drive.google.com/file/d/1ZR95R-yNbPbdzfeKz90UvYtjBAWC0FXC/view?usp=sharing"
+              href="https://drive.google.com/file/d/1gL-ziJTzkVin7no3dHpVQWUiPVB1LHyb/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
               initial={{ borderColor: '#1A1A1A', color: '#A0A0A0', backgroundColor: 'rgba(0,0,0,0)' }}
