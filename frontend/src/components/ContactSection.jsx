@@ -32,6 +32,7 @@ const labelBase = {
   marginBottom:   7,
 };
 
+// 1rem = 16px — prevents iOS Safari auto-zoom on input focus
 function getFieldStyle(hasError) {
   return {
     width:        '100%',
@@ -41,7 +42,7 @@ function getFieldStyle(hasError) {
     borderRadius: 10,
     color:        'var(--text-primary)',
     fontFamily:   'Inter, sans-serif',
-    fontSize:     '0.98rem',
+    fontSize:     '1rem',
     fontWeight:   400,
     outline:      'none',
     transition:   'border-color 0.2s ease',
@@ -49,6 +50,21 @@ function getFieldStyle(hasError) {
     lineHeight:   1.5,
   };
 }
+
+const CONTACT_CSS = `
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2.5rem, 5vw, 5rem);
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    align-items: stretch;
+  }
+  @media (max-width: 767px) {
+    .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+  }
+`;
 
 export default function ContactSection() {
   const sectionRef = useRef(null);
@@ -103,17 +119,8 @@ export default function ContactSection() {
         boxSizing:  'border-box',
       }}
     >
-      <div
-        style={{
-          display:             'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap:                 'clamp(2.5rem, 5vw, 5rem)',
-          width:               '100%',
-          maxWidth:            1280,
-          margin:              '0 auto',
-          alignItems:          'stretch',
-        }}
-      >
+      <style>{CONTACT_CSS}</style>
+      <div className="contact-grid">
         {/* ── Left: heading · subtitle · socials ─────────────── */}
         <motion.div
           initial={{ opacity: 0, x: -28 }}
@@ -314,7 +321,8 @@ export default function ContactSection() {
                 onMouseLeave={(e) => { e.currentTarget.style.opacity = status === 'sending' ? '0.55' : '1'; }}
                 style={{
                   width:        '100%',
-                  padding:      '14px 24px',
+                  minHeight:    44,
+                  padding:      '12px 24px',
                   background:   'var(--text-primary)',
                   color:        '#050505',
                   border:       'none',

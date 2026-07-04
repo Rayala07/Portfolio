@@ -52,7 +52,8 @@ function SkillTile({ skill }) {
         userSelect: 'none',
       }}
     >
-      {/* Logo — desaturated at rest, full color on hover */}
+      {/* Logo — slightly muted at rest so hover still feels responsive,
+          but readable without hover for touch users */}
       <div style={{
         width:        64,
         height:       64,
@@ -61,7 +62,7 @@ function SkillTile({ skill }) {
         display:      'flex',
         alignItems:   'center',
         justifyContent: 'center',
-        filter:       hovered ? 'none' : 'saturate(0.6) brightness(0.8)',
+        filter:       hovered ? 'none' : 'saturate(0.82) brightness(0.92)',
         transition:   'filter 0.28s ease',
         flexShrink:   0,
       }}>
@@ -80,7 +81,7 @@ function SkillTile({ skill }) {
         fontFamily:    "'Space Grotesk', sans-serif",
         color: hovered
           ? 'rgba(245,243,240,0.92)'
-          : 'rgba(245,243,240,0.38)',
+          : 'rgba(245,243,240,0.68)',
         transition:    'color 0.22s ease',
         textAlign:     'center',
         lineHeight:    1.3,

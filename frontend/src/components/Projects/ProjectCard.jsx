@@ -111,8 +111,8 @@ export default function ProjectCard({ project, index, hasEntered }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            opacity: hovered ? 1 : 0,
-            transform: hovered ? 'scale(1)' : 'scale(0.65)',
+            opacity: hovered ? 1 : 0.5,
+            transform: hovered ? 'scale(1)' : 'scale(0.82)',
             transition: 'opacity 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
             pointerEvents: 'none',
             zIndex: 10,
@@ -147,7 +147,7 @@ export default function ProjectCard({ project, index, hasEntered }) {
         </h3>
         <p
           style={{
-            fontSize: 'clamp(1rem, 1vw, 0.9rem)',
+            fontSize: 'clamp(0.875rem, 1vw, 1rem)',
             color: 'var(--text-primary)',
             fontFamily: 'Inter, sans-serif',
             fontWeight: 300,

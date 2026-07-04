@@ -16,6 +16,22 @@ const ACHIEVEMENTS = [
   },
 ];
 
+/* Responsive overrides — organizer grid collapses on narrow viewports */
+const ACHIEVE_CSS = `
+  .achieve-organizer-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: clamp(2rem, 4vw, 5rem);
+    align-items: start;
+  }
+  @media (max-width: 640px) {
+    .achieve-organizer-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+  }
+`;
+
 /* Injected once — @property enables smooth conic-gradient angle animation */
 const BORDER_CSS = `
   @property --bangle {
@@ -89,9 +105,10 @@ export default function AchievementsSection() {
         padding:        'clamp(4rem, 8vh, 7rem) clamp(1.5rem, 5vw, 4rem)',
         boxSizing:      'border-box',
         position:       'relative',
+        overflowX:      'hidden', // prevents ghost "01" from causing horizontal page scroll
       }}
     >
-      <style>{BORDER_CSS}</style>
+      <style>{ACHIEVE_CSS + BORDER_CSS}</style>
 
       <div style={{ width: '100%', maxWidth: 1280, margin: '0 auto' }}>
 
@@ -278,14 +295,7 @@ function SpotlightCard({ item, hasEntered }) {
         />
 
         {/* Row 4 — organizer + brief */}
-        <div
-          style={{
-            display:             'grid',
-            gridTemplateColumns: '200px 1fr',
-            gap:                 'clamp(2rem, 4vw, 5rem)',
-            alignItems:          'start',
-          }}
-        >
+        <div className="achieve-organizer-grid">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}

@@ -3,6 +3,12 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 
+// Below 600px the descriptor is hidden — the index+name alone fit comfortably
+const LIST_CSS = `
+  .ai-descriptor { display: block; }
+  @media (max-width: 599px) { .ai-descriptor { display: none; } }
+`;
+
 // Short descriptors for each Applied AI concept
 const DESCRIPTORS = {
   langchain:  'Building LLM application chains',
@@ -80,18 +86,19 @@ function AppliedAIItem({ skill, index, hasEntered }) {
           {skill.name}
         </span>
 
-        {/* Descriptor — right-aligned, italic, very muted */}
+        {/* Descriptor — right-aligned, italic, very muted; hidden below 600px */}
         <span
-          className="font-cormorant"
+          className="font-cormorant ai-descriptor"
           style={{
-            fontSize:      'clamp(0.85rem, 1.1vw, 1.05rem)',
-            color:         hovered
+            fontSize:   'clamp(0.85rem, 1.1vw, 1.05rem)',
+            color:      hovered
               ? 'rgba(245,243,240,0.45)'
               : 'rgba(245,243,240,0.22)',
-            transition:    'color 0.22s ease',
-            flexShrink:    0,
-            textAlign:     'right',
-            maxWidth:      '240px',
+            transition: 'color 0.22s ease',
+            flexShrink: 1,
+            textAlign:  'right',
+            maxWidth:   '240px',
+            minWidth:   0,
           }}
         >
           {descriptor}
@@ -104,6 +111,7 @@ function AppliedAIItem({ skill, index, hasEntered }) {
 export default function AppliedAIList({ skills, hasEntered }) {
   return (
     <div style={{ width: '100%' }}>
+      <style>{LIST_CSS}</style>
       {skills.map((skill, i) => (
         <AppliedAIItem
           key={skill.id}

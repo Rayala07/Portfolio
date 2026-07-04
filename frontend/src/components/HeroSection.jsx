@@ -244,9 +244,10 @@ function EmailCopyButton() {
         onClick={handleCopy}
         initial={{ borderColor: '#1A1A1A', color: '#A0A0A0', backgroundColor: 'rgba(0,0,0,0)' }}
         whileHover={{ backgroundColor: '#A89BF2', color: '#050505', borderColor: '#A89BF2' }}
+        whileTap={{ backgroundColor: '#A89BF2', color: '#050505', borderColor: '#A89BF2', scale: 0.97 }}
         transition={{ duration: 0.22 }}
-        style={{ fontSize: '0.72rem', display: 'inline-block' }}
-        className="tracking-[0.12em] uppercase border px-5 py-2.5 cursor-pointer"
+        style={{ fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', minHeight: 44 }}
+        className="tracking-[0.12em] uppercase border px-5 cursor-pointer"
       >
         {copied ? 'Copied!' : 'Email Me ↗'}
       </motion.button>
@@ -308,7 +309,7 @@ export default function HeroSection() {
         <h1
           className="font-syne tracking-tight"
           style={{
-            fontSize: 'clamp(4rem, 11vw, 9rem)',
+            fontSize: 'clamp(2.5rem, 11vw, 9rem)',
             lineHeight: 0.9,
             textShadow: '0 0 120px rgba(168, 155, 242, 0.07)',
           }}
@@ -339,10 +340,18 @@ export default function HeroSection() {
               href="https://github.com/Rayala07"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="GitHub"
               initial={{ opacity: 0.4, color: '#F5F3F0' }}
               whileHover={{ opacity: 1, scale: 1.12, color: '#A89BF2' }}
+              whileTap={{ scale: 0.92, opacity: 1, color: '#A89BF2' }}
               transition={{ duration: 0.2 }}
-              style={{ display: 'block' }}
+              style={{
+                display:        'flex',
+                alignItems:     'center',
+                justifyContent: 'center',
+                minWidth:       44,
+                minHeight:      44,
+              }}
             >
               <GithubIcon />
             </motion.a>
@@ -353,10 +362,18 @@ export default function HeroSection() {
               href="https://www.linkedin.com/in/rayala07/"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="LinkedIn"
               initial={{ opacity: 0.4, color: '#F5F3F0' }}
               whileHover={{ opacity: 1, scale: 1.12, color: '#A89BF2' }}
+              whileTap={{ scale: 0.92, opacity: 1, color: '#A89BF2' }}
               transition={{ duration: 0.2 }}
-              style={{ display: 'block' }}
+              style={{
+                display:        'flex',
+                alignItems:     'center',
+                justifyContent: 'center',
+                minWidth:       44,
+                minHeight:      44,
+              }}
             >
               <LinkedinIcon />
             </motion.a>
@@ -380,9 +397,10 @@ export default function HeroSection() {
               rel="noopener noreferrer"
               initial={{ borderColor: '#1A1A1A', color: '#A0A0A0', backgroundColor: 'rgba(0,0,0,0)' }}
               whileHover={{ backgroundColor: '#A89BF2', color: '#050505', borderColor: '#A89BF2' }}
+              whileTap={{ backgroundColor: '#A89BF2', color: '#050505', borderColor: '#A89BF2', scale: 0.97 }}
               transition={{ duration: 0.22 }}
-              style={{ fontSize: '0.72rem', textDecoration: 'none', display: 'inline-block' }}
-              className="tracking-[0.12em] uppercase border px-5 py-2.5"
+              style={{ fontSize: '0.72rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: 44 }}
+              className="tracking-[0.12em] uppercase border px-5"
             >
               Resume →
             </motion.a>

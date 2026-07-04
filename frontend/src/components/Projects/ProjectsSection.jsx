@@ -25,11 +25,12 @@ export default function ProjectsSection() {
       {/* ── Header: heading left, View All Work right ── */}
       <div
         style={{
-          display: 'flex',
-          alignItems: 'flex-end',
+          display:        'flex',
+          alignItems:     'flex-end',
           justifyContent: 'space-between',
-          marginBottom: 'clamp(2.5rem, 5vh, 4rem)',
-          gap: '2rem',
+          flexWrap:       'wrap',         // wraps on narrow viewports
+          marginBottom:   'clamp(2.5rem, 5vh, 4rem)',
+          gap:            '1rem 2rem',    // row-gap 1rem, col-gap 2rem
         }}
       >
         {/* LEFT — "Featured\nProjects" */}
@@ -89,11 +90,12 @@ export default function ProjectsSection() {
 
       {/* ── Project card grid ── */}
       <div
+        className="projects-card-grid"
         style={{
-          display: 'grid',
+          display:             'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 'clamp(1.2rem, 2.5vw, 2rem)',
-          alignItems: 'start',
+          gap:                 'clamp(1.2rem, 2.5vw, 2rem)',
+          alignItems:          'start',
         }}
       >
         {PROJECTS.map((project, i) => (
@@ -108,9 +110,7 @@ export default function ProjectsSection() {
 
       <style>{`
         @media (max-width: 640px) {
-          #projects > div:last-of-type {
-            grid-template-columns: 1fr !important;
-          }
+          .projects-card-grid { grid-template-columns: 1fr; }
         }
       `}</style>
     </section>
@@ -121,9 +121,9 @@ function ViewAllArrow() {
   return (
     <div
       style={{
-        width: 34,
-        height: 34,
-        borderRadius: 8,
+        width: 44,
+        height: 44,
+        borderRadius: 10,
         border: '1px solid rgba(255,255,255,0.18)',
         background: 'rgba(255,255,255,0.04)',
         display: 'flex',
