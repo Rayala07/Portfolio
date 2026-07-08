@@ -298,14 +298,14 @@ export default function HeroSection() {
   return (
     <section
       id="home"
-      className="h-screen w-full flex flex-col relative overflow-hidden"
-      style={{ padding: '0 clamp(1.5rem, 5vw, 4rem)' }}
+      className="w-full flex flex-col relative overflow-hidden"
+      style={{ minHeight: '100dvh', padding: '0 clamp(1.5rem, 5vw, 4rem)' }}
     >
       {/* Breathing membrane dot field */}
       <DotGrid />
 
       {/* ── Title block — pinned to bottom of flex-1 area */}
-      <div className="flex-1 flex flex-col justify-end pb-3 z-10">
+      <div className="flex-1 flex flex-col justify-center md:justify-end md:pb-3 z-10">
         <h1
           className="font-syne tracking-tight"
           style={{
@@ -322,7 +322,7 @@ export default function HeroSection() {
       </div>
 
       {/* Bottom divider */}
-      <div className="z-10 mt-8">
+      <div className="z-10 mt-4 md:mt-8">
         <DrawLine delay={1.05} />
       </div>
 
@@ -331,7 +331,7 @@ export default function HeroSection() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 1.15 }}
-        className="z-10 py-6 grid grid-cols-1 md:grid-cols-3 items-center gap-6 md:gap-4"
+        className="z-10 py-4 md:py-6 flex items-center justify-between md:grid md:grid-cols-3 md:gap-4"
       >
         {/* Socials — left */}
         <div className="flex items-center gap-5">
@@ -380,8 +380,8 @@ export default function HeroSection() {
           </Magnetic>
         </div>
 
-        {/* Tagline — center */}
-        <p className="font-cormorant text-lg md:text-center" style={{ color: 'var(--text-muted)', lineHeight: 1.45 }}>
+        {/* Tagline — center (hidden on mobile: socials + buttons fill the single row) */}
+        <p className="font-cormorant text-lg md:text-center hidden md:block" style={{ color: 'var(--text-muted)', lineHeight: 1.45 }}>
           Building scalable production grade
           <br className="hidden md:block" /> AI web platforms.
         </p>

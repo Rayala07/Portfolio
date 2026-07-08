@@ -6,8 +6,10 @@ import { motion, useMotionValue, useSpring } from 'motion/react';
 const INTERACTIVE = 'a, button, [role="button"], input, textarea, select, [data-cursor-hover]';
 
 export default function CustomCursor() {
-  const [visible,  setVisible]  = useState(false);
-  const [hovering, setHovering] = useState(false);
+  const [visible,        setVisible]        = useState(false);
+  const [hovering,       setHovering]       = useState(false);
+  // null = not yet determined (SSR/hydration), true = fine pointer, false = touch/coarse
+  const [isFinePointer,  setIsFinePointer]  = useState(null);
   const hasShown = useRef(false);
 
   const mouseX = useMotionValue(-100);
@@ -20,6 +22,10 @@ export default function CustomCursor() {
   // Ring size springs between resting (30) and hover (52)
   const ringSizeMV = useMotionValue(30);
   const ringSize   = useSpring(ringSizeMV, { stiffness: 280, damping: 22 });
+
+  useEffect(() => {
+    setIsFinePointer(window.matchMedia('(pointer: fine)').matches);
+  }, []);
 
   useEffect(() => {
     ringSizeMV.set(hovering ? 52 : 30);
@@ -47,6 +53,8 @@ export default function CustomCursor() {
       document.removeEventListener('mouseover', onHoverCheck);
     };
   }, [mouseX, mouseY]);
+
+  if (!isFinePointer) return null;
 
   return (
     <>
