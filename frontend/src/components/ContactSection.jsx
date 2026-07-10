@@ -49,6 +49,24 @@ const SOCIALS = [
   { id: 'linkedin', icon: 'hn hn-linkedin',  href: 'https://www.linkedin.com/in/rayala07/', label: 'LinkedIn' },
 ];
 
+const CONTACT_CSS = `
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+    gap: clamp(2.5rem, 5vw, 5rem);
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    align-items: stretch;
+  }
+  @media (max-width: 767px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+`;
+
 const INPUT_BG       = '#171717';
 const BORDER_DEFAULT = 'rgba(255,255,255,0.22)';
 const BORDER_FOCUS   = 'rgba(168,155,242,0.55)';
@@ -227,17 +245,8 @@ export default function ContactSection() {
         boxSizing:   'border-box',
       }}
     >
-      <div
-        style={{
-          display:             'grid',
-          gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)',
-          gap:                 'clamp(2.5rem, 5vw, 5rem)',
-          width:               '100%',
-          maxWidth:            1280,
-          margin:              '0 auto',
-          alignItems:          'stretch',
-        }}
-      >
+      <style>{CONTACT_CSS}</style>
+      <div className="contact-grid">
         {/* ── LEFT: heading + socials ───────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, x: -28 }}
@@ -424,6 +433,7 @@ export default function ContactSection() {
                       type="button"
                       onClick={goBack}
                       whileHover={{ opacity: 0.88 }}
+                      whileTap={{ scale: 0.96 }}
                       style={{
                         padding:       '13px 20px',
                         background:    'rgba(255,255,255,0.05)',
@@ -434,6 +444,7 @@ export default function ContactSection() {
                         fontWeight:    700,
                         fontSize:      '0.88rem',
                         cursor:        'pointer',
+                        flexShrink:    0,
                       }}
                     >
                       ← Back
@@ -547,6 +558,7 @@ export default function ContactSection() {
                     type="button"
                     onClick={goBack}
                     whileHover={{ opacity: 0.88 }}
+                    whileTap={{ scale: 0.96 }}
                     style={{
                       padding:       '13px 20px',
                       background:    'rgba(255,255,255,0.05)',
@@ -557,6 +569,7 @@ export default function ContactSection() {
                       fontWeight:    700,
                       fontSize:      '0.88rem',
                       cursor:        'pointer',
+                      flexShrink:    0,
                     }}
                   >
                     ← Back
@@ -564,12 +577,12 @@ export default function ContactSection() {
                   <motion.button
                     type="button"
                     onClick={submit}
-                    initial="rest"
-                    whileHover="hover"
-                    animate="rest"
+                    whileHover={{ opacity: 0.9 }}
+                    whileTap={{ scale: 0.97 }}
                     style={{
                       flex:          1,
-                      padding:       '13px 24px',
+                      minWidth:      0,
+                      padding:       '13px 20px',
                       background:    'var(--text-primary)',
                       color:         '#050505',
                       border:        'none',
@@ -578,21 +591,12 @@ export default function ContactSection() {
                       fontWeight:    700,
                       fontSize:      '0.88rem',
                       cursor:        'pointer',
-                      display:       'flex',
-                      alignItems:    'center',
-                      justifyContent:'center',
+                      whiteSpace:    'nowrap',
+                      overflow:      'hidden',
+                      textOverflow:  'ellipsis',
                     }}
                   >
-                    Connect with the best developer in Town
-                    <motion.span
-                      variants={{
-                        rest: { opacity: 0, x: -10, scale: 0.5 },
-                        hover: { opacity: 1, x: 0, scale: 1 }
-                      }}
-                      style={{ display: 'inline-block', marginLeft: 10, fontSize: '1.35rem', lineHeight: 1 }}
-                    >
-                      😎
-                    </motion.span>
+                    Send message →
                   </motion.button>
                 </div>
               </motion.div>
