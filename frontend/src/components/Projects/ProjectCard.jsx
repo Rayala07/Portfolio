@@ -3,6 +3,13 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 
+const CARD_CSS = `
+  @media (pointer: coarse) {
+    .project-link  { cursor: pointer !important; }
+    .project-arrow { opacity: 1 !important; transform: scale(1) !important; }
+  }
+`;
+
 export default function ProjectCard({ project, index, hasEntered }) {
   const [hovered, setHovered] = useState(false);
 
@@ -17,6 +24,7 @@ export default function ProjectCard({ project, index, hasEntered }) {
       }}
       style={{ display: 'flex', flexDirection: 'column' }}
     >
+      <style>{CARD_CSS}</style>
       {/* ── Card ──
           Aspect ratio 2/1 matches the screenshot dimensions (1536×784 ≈ 2:1).
           This lets the screenshot fill the inner frame with equal margins
@@ -25,6 +33,7 @@ export default function ProjectCard({ project, index, hasEntered }) {
         href={project.liveUrl}
         target="_blank"
         rel="noopener noreferrer"
+        className="project-link"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         aria-label={`Open ${project.name}`}
@@ -95,8 +104,9 @@ export default function ProjectCard({ project, index, hasEntered }) {
           />
         </div>
 
-        {/* Arrow indicator — fades in on hover */}
+        {/* Arrow indicator — fades in on hover; always visible on touch via .project-arrow CSS */}
         <div
+          className="project-arrow"
           style={{
             position: 'absolute',
             bottom: 16,
