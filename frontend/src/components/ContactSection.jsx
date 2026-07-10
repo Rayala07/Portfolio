@@ -2,109 +2,217 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useInView, motion, AnimatePresence } from 'motion/react';
-import { z } from 'zod';
 
-const schema = z.object({
-  name:    z.string().min(2, 'Name must be at least 2 characters'),
-  email:   z.string().email('Please enter a valid email address'),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
-});
-
-const SOCIALS = [
-  { id: 'x',       icon: 'hn hn-x',        href: 'https://github.com/Rayala07',             label: 'X (Twitter)' },
-  { id: 'linkedin', icon: 'hn hn-linkedin', href: 'https://www.linkedin.com/in/rayala07/',   label: 'LinkedIn' },
+/* ─────────────────────────────────────────────────────────────────
+   CONVERSATION STEPS
+   Each step has a question + chip options.
+   The user picks a chip OR types a custom answer.
+───────────────────────────────────────────────────────────────── */
+const STEPS = [
+  {
+    id: 'reason',
+    question: "What brings you here?",
+    hint: 'Pick one or describe it yourself',
+    chips: [
+      'I have a project idea',
+      'I want to hire you',
+      'I want to collaborate',
+      'Just saying hi 👋',
+    ],
+  },
+  {
+    id: 'work',
+    question: "What kind of work are you looking for?",
+    hint: 'Select the best fit or tell me more',
+    chips: [
+      'Full-stack web app',
+      'AI integration',
+      'Frontend only',
+      'Backend / API',
+    ],
+  },
+  {
+    id: 'timeline',
+    question: "What's your timeline?",
+    hint: 'No pressure, just helps me plan',
+    chips: [
+      'ASAP',
+      'Within a month',
+      '3+ months',
+      'Not sure yet',
+    ],
+  },
 ];
 
-/* ── Shared token-level styles ─────────────────────────────────── */
-const CARD_BG    = '#0E0E0E';
-const INPUT_BG   = '#171717';          // one shade lighter than card
+const SOCIALS = [
+  { id: 'x',        icon: 'hn hn-x',        href: 'https://github.com/Rayala07',           label: 'X (Twitter)' },
+  { id: 'linkedin', icon: 'hn hn-linkedin',  href: 'https://www.linkedin.com/in/rayala07/', label: 'LinkedIn' },
+];
+
+const INPUT_BG       = '#171717';
 const BORDER_DEFAULT = 'rgba(255,255,255,0.22)';
 const BORDER_FOCUS   = 'rgba(168,155,242,0.55)';
 const BORDER_ERROR   = 'rgba(239,68,68,0.45)';
 
-const labelBase = {
-  display:        'block',
-  fontFamily:     'Inter, sans-serif',
-  fontSize:       '0.85rem',
-  fontWeight:     500,
-  letterSpacing:  '0.01em',
-  color:          'rgba(245,243,240,0.75)',
-  marginBottom:   7,
-};
+/* ─────────────────────────────────────────────────────────────────
+   STEP INDICATOR — e.g. "2 / 3"
+───────────────────────────────────────────────────────────────── */
+function StepIndicator({ current, total }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '2rem' }}>
+      {/* Track */}
+      <div
+        style={{
+          flex: 1,
+          height: 2,
+          background: 'rgba(255,255,255,0.08)',
+          borderRadius: 99,
+          overflow: 'hidden',
+        }}
+      >
+        <motion.div
+          style={{ height: '100%', background: 'var(--accent)', borderRadius: 99 }}
+          initial={{ width: 0 }}
+          animate={{ width: `${((current + 1) / total) * 100}%` }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        />
+      </div>
 
-// 1rem = 16px — prevents iOS Safari auto-zoom on input focus
-function getFieldStyle(hasError) {
-  return {
-    width:        '100%',
-    padding:      '12px 15px',
-    background:   INPUT_BG,
-    border:       `1px solid ${hasError ? BORDER_ERROR : BORDER_DEFAULT}`,
-    borderRadius: 10,
-    color:        'var(--text-primary)',
-    fontFamily:   'Inter, sans-serif',
-    fontSize:     '1rem',
-    fontWeight:   400,
-    outline:      'none',
-    transition:   'border-color 0.2s ease',
-    boxSizing:    'border-box',
-    lineHeight:   1.5,
-  };
+      {/* Counter */}
+      <span
+        style={{
+          fontFamily:    'Inter, sans-serif',
+          fontSize:      '0.7rem',
+          fontWeight:    600,
+          letterSpacing: '0.1em',
+          color:         'rgba(245,243,240,0.35)',
+          flexShrink:    0,
+        }}
+      >
+        {current + 1} / {total}
+      </span>
+    </div>
+  );
 }
 
-const CONTACT_CSS = `
-  .contact-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(2.5rem, 5vw, 5rem);
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    align-items: stretch;
-  }
-  @media (max-width: 767px) {
-    .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
-  }
-`;
+/* ─────────────────────────────────────────────────────────────────
+   CHIP — selectable option
+───────────────────────────────────────────────────────────────── */
+function Chip({ label, selected, onClick }) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileHover={{ backgroundColor: selected ? 'var(--accent)' : 'rgba(168,155,242,0.15)' }}
+      transition={{ duration: 0.15 }}
+      style={{
+        padding:         '9px 18px',
+        border:          `1px solid ${selected ? 'var(--accent)' : 'rgba(255,255,255,0.14)'}`,
+        backgroundColor: selected ? 'var(--accent)' : 'rgba(255,255,255,0.03)',
+        color:           selected ? '#050505' : 'rgba(245,243,240,0.55)',
+        fontFamily:      'Inter, sans-serif',
+        fontSize:        '0.82rem',
+        fontWeight:      selected ? 600 : 400,
+        letterSpacing:   '0.01em',
+        borderRadius:    0,
+        cursor:          'pointer',
+        transition:      'border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease',
+        whiteSpace:      'nowrap',
+      }}
+    >
+      {label}
+    </motion.button>
+  );
+}
 
+/* ─────────────────────────────────────────────────────────────────
+   MAIN SECTION
+───────────────────────────────────────────────────────────────── */
 export default function ContactSection() {
   const sectionRef = useRef(null);
   const hasEntered = useInView(sectionRef, { once: true, amount: 0.15 });
 
-  const [form,   setForm]   = useState({ name: '', email: '', message: '' });
-  const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState('idle'); // idle | sending | sent
+  // step index 0..STEPS.length-1 → then "email" step → then "done"
+  const [stepIndex,  setStepIndex]  = useState(0);
+  const [answers,    setAnswers]    = useState({});   // { reason: '...', work: '...', timeline: '...' }
+  const [customText, setCustomText] = useState('');   // live value of the custom textarea
+  const [email,      setEmail]      = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [phase,      setPhase]      = useState('steps'); // 'steps' | 'email' | 'sent'
+  const [direction,  setDirection]  = useState(1);    // 1 = forward, -1 = back (for slide animation)
 
-  const clearError = (field) =>
-    setErrors((prev) => { const n = { ...prev }; delete n[field]; return n; });
+  const inputRef = useRef(null);
 
-  const handleChange = (field) => (e) => {
-    setForm((f) => ({ ...f, [field]: e.target.value }));
-    if (errors[field]) clearError(field);
+  // reset custom text when step changes
+  useEffect(() => { setCustomText(''); }, [stepIndex]);
+
+  // focus textarea when custom-input appears
+  useEffect(() => { if (inputRef.current) inputRef.current.focus(); }, [stepIndex]);
+
+  const step = STEPS[stepIndex];
+  const currentAnswer = answers[step?.id] ?? '';
+  const hasAnswer     = currentAnswer.trim().length > 0 || customText.trim().length > 0;
+
+  /* ── Handle chip click ── */
+  const selectChip = (label) => {
+    setAnswers(prev => ({ ...prev, [step.id]: label }));
+    setCustomText('');
   };
 
-  // Auto-dismiss errors after 3 s with a fade-out (AnimatePresence handles the exit)
-  useEffect(() => {
-    if (!Object.values(errors).some(Boolean)) return;
-    const id = setTimeout(() => setErrors({}), 3000);
-    return () => clearTimeout(id);
-  }, [errors]);
+  /* ── Advance step ── */
+  const advance = () => {
+    const value = (customText.trim() || currentAnswer).trim();
+    if (!value) return;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const result = schema.safeParse(form);
-    if (!result.success) {
-      const flat = result.error.flatten().fieldErrors;
-      setErrors({
-        name:    flat.name?.[0],
-        email:   flat.email?.[0],
-        message: flat.message?.[0],
-      });
+    // lock in custom text if typed
+    if (customText.trim()) {
+      setAnswers(prev => ({ ...prev, [step.id]: customText.trim() }));
+    }
+
+    setDirection(1);
+
+    if (stepIndex < STEPS.length - 1) {
+      setStepIndex(i => i + 1);
+    } else {
+      setPhase('email');
+    }
+  };
+
+  /* ── Go back ── */
+  const goBack = () => {
+    setDirection(-1);
+    if (phase === 'email') {
+      setPhase('steps');
+    } else if (stepIndex > 0) {
+      setStepIndex(i => i - 1);
+    }
+  };
+
+  /* ── Submit ── */
+  const submit = async () => {
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError('Please enter a valid email address');
       return;
     }
-    setErrors({});
-    setStatus('sending');
-    await new Promise((r) => setTimeout(r, 900));
-    setStatus('sent');
+    setEmailError('');
+    // Simulate send
+    await new Promise(r => setTimeout(r, 700));
+    setPhase('sent');
+  };
+
+  /* ── Key handler — Enter advances ── */
+  const onKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      advance();
+    }
+  };
+
+  /* ── Slide variants ── */
+  const slideVariants = {
+    enter:   (dir) => ({ opacity: 0, x: dir > 0 ? 40 : -40 }),
+    center:  { opacity: 1, x: 0 },
+    exit:    (dir) => ({ opacity: 0, x: dir > 0 ? -40 : 40 }),
   };
 
   return (
@@ -112,16 +220,25 @@ export default function ContactSection() {
       id="contact"
       ref={sectionRef}
       style={{
-        minHeight:  '100vh',
-        display:    'flex',
-        alignItems: 'center',
-        padding:    'clamp(3rem, 6vh, 5rem) clamp(1.5rem, 5vw, 4rem)',
-        boxSizing:  'border-box',
+        minHeight:   '100vh',
+        display:     'flex',
+        alignItems:  'center',
+        padding:     'clamp(3rem, 6vh, 5rem) clamp(1.5rem, 5vw, 4rem)',
+        boxSizing:   'border-box',
       }}
     >
-      <style>{CONTACT_CSS}</style>
-      <div className="contact-grid">
-        {/* ── Left: heading · subtitle · socials ─────────────── */}
+      <div
+        style={{
+          display:             'grid',
+          gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)',
+          gap:                 'clamp(2.5rem, 5vw, 5rem)',
+          width:               '100%',
+          maxWidth:            1280,
+          margin:              '0 auto',
+          alignItems:          'stretch',
+        }}
+      >
+        {/* ── LEFT: heading + socials ───────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, x: -28 }}
           animate={hasEntered ? { opacity: 1, x: 0 } : { opacity: 0, x: -28 }}
@@ -153,8 +270,7 @@ export default function ContactSection() {
                 margin:     0,
               }}
             >
-              Have a project or need help? Fill out the form, and I'll get back
-              to you soon.
+              Have a project or need help? Answer a few quick questions and I'll get back to you soon.
             </p>
           </div>
 
@@ -199,170 +315,336 @@ export default function ContactSection() {
           </div>
         </motion.div>
 
-        {/* ── Right: form card ────────────────────────────────── */}
+        {/* ── RIGHT: conversational form card ─────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
           transition={{ delay: 0.1, duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
           style={{
-            background:    CARD_BG,
+            background:    '#0E0E0E',
             border:        '1px solid rgba(255,255,255,0.07)',
             borderRadius:  20,
-            padding:       'clamp(1.8rem, 3.5vh, 2.6rem) clamp(1.8rem, 3vw, 2.6rem)',
+            padding:       'clamp(2rem, 4vh, 3rem) clamp(2rem, 3vw, 2.8rem)',
             display:       'flex',
             flexDirection: 'column',
+            minHeight:     400,
           }}
         >
-          {status === 'sent' ? (
-            <div
-              style={{
-                flex:           1,
-                display:        'flex',
-                flexDirection:  'column',
-                alignItems:     'center',
-                justifyContent: 'center',
-                textAlign:      'center',
-                gap:            14,
-                minHeight:      320,
-              }}
-            >
-              <div
-                style={{
-                  width:          52,
-                  height:         52,
-                  borderRadius:   '50%',
-                  border:         '1.5px solid rgba(168,155,242,0.4)',
-                  display:        'flex',
-                  alignItems:     'center',
-                  justifyContent: 'center',
-                  color:          'var(--accent)',
-                  fontSize:       '1.3rem',
-                }}
-              >
-                ✓
-              </div>
-              <h3
-                className="font-bricolage"
-                style={{ fontWeight: 700, fontSize: '1.4rem', color: 'var(--text-primary)', margin: 0 }}
-              >
-                Message sent!
-              </h3>
-              <p style={{ color: 'rgba(245,243,240,0.42)', fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', margin: 0 }}>
-                I'll get back to you as soon as possible.
-              </p>
-            </div>
-          ) : (
-            <form
-              onSubmit={handleSubmit}
-              noValidate
-              style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(1rem, 2vh, 1.4rem)', flex: 1 }}
-            >
-              {/* Name */}
-              <div>
-                <label style={labelBase}>Name</label>
-                <input
-                  type="text"
-                  placeholder="Enter your name"
-                  value={form.name}
-                  onChange={handleChange('name')}
-                  onFocus={(e) => { e.target.style.borderColor = errors.name ? BORDER_ERROR : BORDER_FOCUS; }}
-                  onBlur={(e)  => { e.target.style.borderColor = errors.name ? BORDER_ERROR : BORDER_DEFAULT; }}
-                  style={getFieldStyle(!!errors.name)}
-                />
-                <AnimatePresence>
-                  {errors.name && <ErrorMsg key="err-name" text={errors.name} />}
-                </AnimatePresence>
-              </div>
+          <AnimatePresence mode="wait" custom={direction}>
 
-              {/* Email */}
-              <div>
-                <label style={labelBase}>Email</label>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={form.email}
-                  onChange={handleChange('email')}
-                  onFocus={(e) => { e.target.style.borderColor = errors.email ? BORDER_ERROR : BORDER_FOCUS; }}
-                  onBlur={(e)  => { e.target.style.borderColor = errors.email ? BORDER_ERROR : BORDER_DEFAULT; }}
-                  style={getFieldStyle(!!errors.email)}
-                />
-                <AnimatePresence>
-                  {errors.email && <ErrorMsg key="err-email" text={errors.email} />}
-                </AnimatePresence>
-              </div>
+            {/* ──── QUESTION STEPS ──── */}
+            {phase === 'steps' && (
+              <motion.div
+                key={`step-${stepIndex}`}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+                style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
+              >
+                {/* Progress */}
+                <StepIndicator current={stepIndex} total={STEPS.length} />
 
-              {/* Your Message */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <label style={labelBase}>Your Message</label>
+                {/* Question */}
+                <p
+                  className="font-bricolage"
+                  style={{
+                    fontSize:      'clamp(1.25rem, 2.2vw, 1.8rem)',
+                    fontWeight:    700,
+                    letterSpacing: '-0.02em',
+                    color:         'var(--text-primary)',
+                    margin:        '0 0 0.4rem',
+                    lineHeight:    1.2,
+                  }}
+                >
+                  {step.question}
+                </p>
+
+                <p
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize:   '0.78rem',
+                    color:      'rgba(245,243,240,0.3)',
+                    margin:     '0 0 1.6rem',
+                  }}
+                >
+                  {step.hint}
+                </p>
+
+                {/* Chips */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: '1.4rem' }}>
+                  {step.chips.map(label => (
+                    <Chip
+                      key={label}
+                      label={label}
+                      selected={currentAnswer === label && !customText}
+                      onClick={() => selectChip(label)}
+                    />
+                  ))}
+                </div>
+
+                {/* Custom text field */}
                 <textarea
-                  placeholder="Type here..."
-                  value={form.message}
-                  onChange={handleChange('message')}
-                  onFocus={(e) => { e.target.style.borderColor = errors.message ? BORDER_ERROR : BORDER_FOCUS; }}
-                  onBlur={(e)  => { e.target.style.borderColor = errors.message ? BORDER_ERROR : BORDER_DEFAULT; }}
+                  ref={inputRef}
+                  rows={2}
+                  placeholder="Or describe it in your own words…"
+                  value={customText}
+                  onChange={e => {
+                    setCustomText(e.target.value);
+                    // deselect chip when user starts typing
+                    if (e.target.value) setAnswers(prev => ({ ...prev, [step.id]: '' }));
+                  }}
+                  onKeyDown={onKeyDown}
                   data-lenis-prevent
                   style={{
-                    ...getFieldStyle(!!errors.message),
-                    resize:    'none',
-                    flex:      1,
-                    minHeight: 110,
+                    width:        '100%',
+                    padding:      '11px 14px',
+                    background:   INPUT_BG,
+                    border:       `1px solid ${BORDER_DEFAULT}`,
+                    borderRadius: 10,
+                    color:        'var(--text-primary)',
+                    fontFamily:   'Inter, sans-serif',
+                    fontSize:     '0.9rem',
+                    outline:      'none',
+                    resize:       'none',
+                    boxSizing:    'border-box',
+                    lineHeight:   1.5,
+                    transition:   'border-color 0.2s ease',
                   }}
+                  onFocus={e  => { e.target.style.borderColor = BORDER_FOCUS; }}
+                  onBlur={e   => { e.target.style.borderColor = BORDER_DEFAULT; }}
                 />
-                <AnimatePresence>
-                  {errors.message && <ErrorMsg key="err-message" text={errors.message} />}
-                </AnimatePresence>
-              </div>
 
-              {/* Submit */}
-              <button
-                type="submit"
-                disabled={status === 'sending'}
-                onMouseEnter={(e) => { if (status !== 'sending') e.currentTarget.style.opacity = '0.88'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.opacity = status === 'sending' ? '0.55' : '1'; }}
+                {/* Next button */}
+                <div style={{ marginTop: 'auto', paddingTop: '1.6rem', display: 'flex', gap: 12 }}>
+                  {stepIndex > 0 && (
+                    <motion.button
+                      type="button"
+                      onClick={goBack}
+                      whileHover={{ opacity: 0.88 }}
+                      style={{
+                        padding:       '13px 20px',
+                        background:    'rgba(255,255,255,0.05)',
+                        color:         'rgba(245,243,240,0.6)',
+                        border:        '1px solid rgba(255,255,255,0.1)',
+                        borderRadius:  10,
+                        fontFamily:    "'Bricolage Grotesque', sans-serif",
+                        fontWeight:    700,
+                        fontSize:      '0.88rem',
+                        cursor:        'pointer',
+                      }}
+                    >
+                      ← Back
+                    </motion.button>
+                  )}
+                  <motion.button
+                    type="button"
+                    onClick={advance}
+                    disabled={!hasAnswer}
+                    whileHover={hasAnswer ? { opacity: 0.88 } : {}}
+                    whileTap={hasAnswer ? { scale: 0.97 } : {}}
+                    style={{
+                      flex:          1,
+                      padding:       '13px 24px',
+                      background:    hasAnswer ? 'var(--accent)' : 'rgba(168,155,242,0.15)',
+                      color:         hasAnswer ? '#050505' : 'rgba(168,155,242,0.45)',
+                      border:        'none',
+                      borderRadius:  10,
+                      fontFamily:    "'Bricolage Grotesque', sans-serif",
+                      fontWeight:    700,
+                      fontSize:      '0.88rem',
+                      letterSpacing: '0.01em',
+                      cursor:        hasAnswer ? 'pointer' : 'not-allowed',
+                      transition:    'background 0.22s ease, color 0.22s ease',
+                    }}
+                  >
+                    {stepIndex < STEPS.length - 1 ? 'Continue →' : 'Last step →'}
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ──── EMAIL STEP ──── */}
+            {phase === 'email' && (
+              <motion.div
+                key="email-step"
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+                style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
+              >
+                {/* Completed progress */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '2rem' }}>
+                  <div style={{ flex: 1, height: 2, background: 'rgba(255,255,255,0.08)', borderRadius: 99, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: '100%', background: 'var(--accent)', borderRadius: 99 }} />
+                  </div>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', color: 'rgba(245,243,240,0.35)', flexShrink: 0 }}>
+                    ✓ Done
+                  </span>
+                </div>
+
+                <p
+                  className="font-bricolage"
+                  style={{
+                    fontSize:      'clamp(1.25rem, 2.2vw, 1.8rem)',
+                    fontWeight:    700,
+                    letterSpacing: '-0.02em',
+                    color:         'var(--text-primary)',
+                    margin:        '0 0 0.4rem',
+                    lineHeight:    1.2,
+                  }}
+                >
+                  Almost there, where should I reach you?
+                </p>
+
+                <p
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize:   '0.78rem',
+                    color:      'rgba(245,243,240,0.3)',
+                    margin:     '0 0 1.6rem',
+                  }}
+                >
+                  I'll reply within 24 hours.
+                </p>
+
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={e => { setEmail(e.target.value); setEmailError(''); }}
+                  onKeyDown={e => { if (e.key === 'Enter') submit(); }}
+                  style={{
+                    width:        '100%',
+                    padding:      '13px 16px',
+                    background:   INPUT_BG,
+                    border:       `1px solid ${emailError ? BORDER_ERROR : BORDER_DEFAULT}`,
+                    borderRadius: 10,
+                    color:        'var(--text-primary)',
+                    fontFamily:   'Inter, sans-serif',
+                    fontSize:     '1rem',
+                    outline:      'none',
+                    boxSizing:    'border-box',
+                    transition:   'border-color 0.2s ease',
+                  }}
+                  onFocus={e => { e.target.style.borderColor = emailError ? BORDER_ERROR : BORDER_FOCUS; }}
+                  onBlur={e  => { e.target.style.borderColor = emailError ? BORDER_ERROR : BORDER_DEFAULT; }}
+                  autoFocus
+                />
+                {emailError && (
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', color: 'rgba(239,68,68,0.85)', marginTop: 6, marginBottom: 0 }}>
+                    {emailError}
+                  </p>
+                )}
+
+                <div style={{ marginTop: 'auto', paddingTop: '1.6rem', display: 'flex', gap: 12 }}>
+                  <motion.button
+                    type="button"
+                    onClick={goBack}
+                    whileHover={{ opacity: 0.88 }}
+                    style={{
+                      padding:       '13px 20px',
+                      background:    'rgba(255,255,255,0.05)',
+                      color:         'rgba(245,243,240,0.6)',
+                      border:        '1px solid rgba(255,255,255,0.1)',
+                      borderRadius:  10,
+                      fontFamily:    "'Bricolage Grotesque', sans-serif",
+                      fontWeight:    700,
+                      fontSize:      '0.88rem',
+                      cursor:        'pointer',
+                    }}
+                  >
+                    ← Back
+                  </motion.button>
+                  <motion.button
+                    type="button"
+                    onClick={submit}
+                    initial="rest"
+                    whileHover="hover"
+                    animate="rest"
+                    style={{
+                      flex:          1,
+                      padding:       '13px 24px',
+                      background:    'var(--text-primary)',
+                      color:         '#050505',
+                      border:        'none',
+                      borderRadius:  10,
+                      fontFamily:    "'Bricolage Grotesque', sans-serif",
+                      fontWeight:    700,
+                      fontSize:      '0.88rem',
+                      cursor:        'pointer',
+                      display:       'flex',
+                      alignItems:    'center',
+                      justifyContent:'center',
+                    }}
+                  >
+                    Connect with the best developer in Town
+                    <motion.span
+                      variants={{
+                        rest: { opacity: 0, x: -10, scale: 0.5 },
+                        hover: { opacity: 1, x: 0, scale: 1 }
+                      }}
+                      style={{ display: 'inline-block', marginLeft: 10, fontSize: '1.35rem', lineHeight: 1 }}
+                    >
+                      😎
+                    </motion.span>
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ──── SUCCESS STATE ──── */}
+            {phase === 'sent' && (
+              <motion.div
+                key="sent"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                 style={{
-                  width:        '100%',
-                  minHeight:    44,
-                  padding:      '12px 24px',
-                  background:   'var(--text-primary)',
-                  color:        '#050505',
-                  border:       'none',
-                  borderRadius: 10,
-                  fontFamily:   "'Bricolage Grotesque', sans-serif",
-                  fontWeight:   600,
-                  fontSize:     '0.95rem',
-                  letterSpacing:'-0.01em',
-                  transition:   'opacity 0.2s ease',
-                  opacity:      status === 'sending' ? 0.55 : 1,
-                  marginTop:    4,
+                  flex:           1,
+                  display:        'flex',
+                  flexDirection:  'column',
+                  alignItems:     'center',
+                  justifyContent: 'center',
+                  textAlign:      'center',
+                  gap:            14,
+                  minHeight:      320,
                 }}
               >
-                {status === 'sending' ? 'Sending…' : 'Submit'}
-              </button>
-            </form>
-          )}
+                <div
+                  style={{
+                    width:          52,
+                    height:         52,
+                    borderRadius:   '50%',
+                    border:         '1.5px solid rgba(168,155,242,0.4)',
+                    display:        'flex',
+                    alignItems:     'center',
+                    justifyContent: 'center',
+                    color:          'var(--accent)',
+                    fontSize:       '1.3rem',
+                  }}
+                >
+                  ✓
+                </div>
+                <h3
+                  className="font-bricolage"
+                  style={{ fontWeight: 700, fontSize: '1.4rem', color: 'var(--text-primary)', margin: 0 }}
+                >
+                  Message sent!
+                </h3>
+                <p style={{ color: 'rgba(245,243,240,0.42)', fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', margin: 0 }}>
+                  I'll get back to you as soon as possible.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
     </section>
-  );
-}
-
-function ErrorMsg({ text }) {
-  return (
-    <motion.p
-      initial={{ opacity: 0, y: -4 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-      style={{
-        fontFamily:   'Inter, sans-serif',
-        fontSize:     '0.75rem',
-        color:        'rgba(239,68,68,0.85)',
-        marginTop:    5,
-        marginBottom: 0,
-        lineHeight:   1.4,
-      }}
-    >
-      {text}
-    </motion.p>
   );
 }

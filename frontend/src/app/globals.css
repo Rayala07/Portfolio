@@ -30,6 +30,13 @@
       cursor: none !important;
     }
   }
+
+  /* Ensure touch/responsive screens always show the normal system cursor */
+  @media (pointer: coarse), (max-width: 768px) {
+    * {
+      cursor: auto !important;
+    }
+  }
   * {
     @apply border-border outline-ring/50;
   }

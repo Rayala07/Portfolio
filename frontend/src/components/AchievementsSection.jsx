@@ -87,6 +87,19 @@ const BORDER_CSS = `
     opacity: 1;
     animation: borderSweep 3s linear infinite;
   }
+
+  /* Touch / responsive screens — no hover available,
+     so run the border sweep automatically at all times */
+  @media (hover: none) {
+    .achieve-card {
+      border-color: transparent;
+    }
+
+    .achieve-card::before {
+      opacity: 1;
+      animation: borderSweep 3s linear infinite;
+    }
+  }
 `;
 
 export default function AchievementsSection() {

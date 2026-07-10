@@ -24,7 +24,21 @@ export default function CustomCursor() {
   const ringSize   = useSpring(ringSizeMV, { stiffness: 280, damping: 22 });
 
   useEffect(() => {
-    setIsFinePointer(window.matchMedia('(pointer: fine)').matches);
+    // Immediately bail out if this is a touch device — check both ways:
+    // 1. ontouchstart: catches real touch hardware
+    // 2. matchMedia: catches mouse-only desktops accurately
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isTouch) {
+      setIsFinePointer(false);
+      return;
+    }
+
+    const mq = window.matchMedia('(pointer: fine) and (hover: hover)');
+    setIsFinePointer(mq.matches);
+
+    const onTouch = () => setIsFinePointer(false);
+    window.addEventListener('touchstart', onTouch, { once: true, passive: true });
+    return () => window.removeEventListener('touchstart', onTouch);
   }, []);
 
   useEffect(() => {

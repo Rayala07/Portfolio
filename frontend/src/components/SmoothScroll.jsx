@@ -11,6 +11,7 @@ export default function SmoothScroll({ children }) {
       // Expo-out easing: fast start, long soft deceleration tail
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      smoothTouch: true, // Enables smooth scroll on touch devices
       wheelMultiplier: 1,
       touchMultiplier: 2,
     });

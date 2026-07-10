@@ -7,11 +7,12 @@ const GithubIcon = () => <i className="hn hn-github text-3xl" />;
 const LinkedinIcon = () => <i className="hn hn-linkedin text-3xl" />;
 
 const DotGrid = () => {
-  const canvasRef = useRef(null);
-  const mouseRef  = useRef({ x: -9999, y: -9999 });
-  const velRef    = useRef({ x: 0, y: 0 });
-  const dotsRef   = useRef(null);
-  const animRef   = useRef(null);
+  const canvasRef    = useRef(null);
+  const mouseRef     = useRef({ x: -9999, y: -9999 });
+  const velRef       = useRef({ x: 0, y: 0 });
+  const dotsRef      = useRef(null);
+  const animRef      = useRef(null);
+  const lastMoveRef  = useRef(0); // tracks last mouse/touch movement time
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -22,11 +23,8 @@ const DotGrid = () => {
     const DOT_R     = 1.1;
     const REPEL_R   = 150;
     const MAX_REPEL = 26;
-    // Spring constants — these together produce the slime feel:
-    // low stiffness = lazy acceleration (lag), high friction = viscous damping (no wild oscillation)
     const STIFFNESS = 0.08;
     const FRICTION  = 0.88;
-    // Soft-floor for repulsion direction: prevents flicker when cursor sits directly on a dot
     const MIN_DIST  = 6;
 
     const init = () => {
@@ -41,7 +39,7 @@ const DotGrid = () => {
       dotsRef.current = Array.from({ length: rows }, (_, r) =>
         Array.from({ length: cols }, (_, c) => ({
           ox: 0, oy: 0,
-          vx: 0, vy: 0,   // spring velocity — carries momentum between frames
+          vx: 0, vy: 0,
           phase:    (r * 0.28 + c * 0.19) + Math.random() * 0.4,
           freqMult: 0.50 + Math.random() * 0.30,
           ampR:     0.14 + Math.random() * 0.08,
@@ -55,23 +53,33 @@ const DotGrid = () => {
       const grid = dotsRef.current;
       if (!grid) return;
 
-      const t    = ts * 0.001;
-      const W    = canvas.offsetWidth;
-      const H    = canvas.offsetHeight;
+      const t = ts * 0.001;
+      const W = canvas.offsetWidth;
+      const H = canvas.offsetHeight;
       ctx.clearRect(0, 0, W, H);
+
+      // ── Idle fade: after 3 s of no movement, gracefully return to rest ──
+      const IDLE_START = 3000;   // ms before fade begins
+      const FADE_DUR   = 1500;   // ms the fade takes to complete
+      const idle = performance.now() - lastMoveRef.current - IDLE_START;
+      // idle < 0  → full strength (1.0)
+      // 0..FADE_DUR → smoothstep from 1 → 0
+      // > FADE_DUR  → fully rested (0.0)
+      const raw    = Math.min(Math.max(idle / FADE_DUR, 0), 1);
+      const fadeMul = 1 - raw * raw * (3 - 2 * raw); // smoothstep
 
       const mx     = mouseRef.current.x;
       const my     = mouseRef.current.y;
-      const active = mx > -9000;
+      // treat as inactive once fade reaches zero so spring can settle fully
+      const active = mx > -9000 && fadeMul > 0;
       const rows   = grid.length;
       const cols   = grid[0].length;
 
-      // Center the grid so it sits symmetrically within the viewport
       const startX = (W - (cols - 1) * SPACING) / 2;
       const startY = (H - (rows - 1) * SPACING) / 2;
 
       const speed    = Math.sqrt(velRef.current.x ** 2 + velRef.current.y ** 2);
-      const dynForce = MAX_REPEL * (1 + Math.min(speed * 0.025, 0.40));
+      const dynForce = MAX_REPEL * (1 + Math.min(speed * 0.025, 0.40)) * fadeMul;
 
       const displaced = [];
 
@@ -86,24 +94,15 @@ const DotGrid = () => {
             const dx   = bx - mx;
             const dy   = by - my;
             const dist = Math.sqrt(dx * dx + dy * dy);
-
             if (dist < REPEL_R) {
               const norm = 1 - dist / REPEL_R;
-              // Smoothstep S-curve: smooth from 0 at edge to 1 at center.
-              // Continuous derivative (no hard cliff) → clean, even circular push.
               const s    = norm * norm * (3 - 2 * norm) * dynForce;
-              // effD adds MIN_DIST in quadrature: keeps direction stable even when
-              // cursor is nearly on top of a dot (prevents random scatter)
               const effD = Math.sqrt(dx * dx + dy * dy + MIN_DIST * MIN_DIST);
               tx = (dx / effD) * s;
               ty = (dy / effD) * s;
             }
           }
 
-          // Spring integration: vx accumulates force, FRICTION drains it each frame.
-          // Dots have momentum → they lag, overshoot slightly, and trail — the slime feel.
-          // Moving cursor fast: leading dots pushed hard, trailing dots still carry outward
-          // velocity after cursor passes → elongated "slime smear" in direction of travel.
           d.vx += (tx - d.ox) * STIFFNESS;
           d.vy += (ty - d.oy) * STIFFNESS;
           d.vx *= FRICTION;
@@ -115,7 +114,6 @@ const DotGrid = () => {
           const y   = by + d.oy;
           const mag = Math.sqrt(d.ox * d.ox + d.oy * d.oy);
 
-          // Diagonal breathing wave — idle organic life
           const wave    = Math.sin(t * d.freqMult + d.phase);
           const breathR = DOT_R * (1 + d.ampR * wave);
           const baseA   = 0.065 + d.ampA * (wave + 1);
@@ -131,12 +129,12 @@ const DotGrid = () => {
         }
       }
 
-      // Ambient lavender glow at cursor
+      // Ambient lavender glow — fades with fadeMul
       if (active) {
         const ar = REPEL_R * 1.2;
         const g  = ctx.createRadialGradient(mx, my, 0, mx, my, ar);
-        g.addColorStop(0,    'rgba(168,155,242,0.15)');
-        g.addColorStop(0.35, 'rgba(168,155,242,0.06)');
+        g.addColorStop(0,    `rgba(168,155,242,${(0.15 * fadeMul).toFixed(4)})`);
+        g.addColorStop(0.35, `rgba(168,155,242,${(0.06 * fadeMul).toFixed(4)})`);
         g.addColorStop(1,    'rgba(168,155,242,0)');
         ctx.fillStyle = g;
         ctx.beginPath();
@@ -144,16 +142,17 @@ const DotGrid = () => {
         ctx.fill();
       }
 
-      // Displaced dots — lavender, fade by displacement depth
       for (const { x, y, mag, breathR } of displaced) {
-        const p = Math.min(mag / MAX_REPEL, 1);
-        ctx.fillStyle = `rgba(168,155,242,${(0.25 + p * 0.75).toFixed(4)})`;
+        const p     = Math.min(mag / MAX_REPEL, 1);
+        const alpha = (0.25 + p * 0.75) * fadeMul;
+        ctx.fillStyle = `rgba(168,155,242,${alpha.toFixed(4)})`;
         ctx.beginPath();
         ctx.arc(x, y, breathR + p * 1.0, 0, Math.PI * 2);
         ctx.fill();
       }
     };
 
+    // ── Mouse events ─────────────────────────────────────────────
     const onMove = (e) => {
       const rect = canvas.getBoundingClientRect();
       const nx = e.clientX - rect.left;
@@ -162,25 +161,54 @@ const DotGrid = () => {
         x: velRef.current.x * 0.65 + (nx - mouseRef.current.x) * 0.35,
         y: velRef.current.y * 0.65 + (ny - mouseRef.current.y) * 0.35,
       };
-      mouseRef.current = { x: nx, y: ny };
+      mouseRef.current  = { x: nx, y: ny };
+      lastMoveRef.current = performance.now();
     };
 
     const onLeave = () => {
       mouseRef.current = { x: -9999, y: -9999 };
       velRef.current   = { x: 0, y: 0 };
+      lastHuman.current = performance.now();
+    };
+
+    // ── Touch events ─────────────────────────────────────────────
+    const onTouch = (e) => {
+      // Don't call preventDefault — let page still scroll naturally
+      const touch = e.touches[0];
+      if (!touch) return;
+      const rect = canvas.getBoundingClientRect();
+      const nx = touch.clientX - rect.left;
+      const ny = touch.clientY - rect.top;
+      velRef.current = {
+        x: velRef.current.x * 0.65 + (nx - mouseRef.current.x) * 0.35,
+        y: velRef.current.y * 0.65 + (ny - mouseRef.current.y) * 0.35,
+      };
+      mouseRef.current   = { x: nx, y: ny };
+      lastMoveRef.current  = performance.now();
+    };
+
+    const onTouchEnd = () => {
+      mouseRef.current = { x: -9999, y: -9999 };
+      velRef.current   = { x: 0, y: 0 };
     };
 
     init();
+    lastMoveRef.current = performance.now(); // start fresh, no idle on load
     animRef.current = requestAnimationFrame(draw);
-    window.addEventListener('resize',     init);
-    window.addEventListener('mousemove',  onMove);
+
+    window.addEventListener('resize',     init,       { passive: true });
+    window.addEventListener('mousemove',  onMove,     { passive: true });
     window.addEventListener('mouseleave', onLeave);
+    window.addEventListener('touchmove',  onTouch,    { passive: true });
+    window.addEventListener('touchend',   onTouchEnd, { passive: true });
 
     return () => {
       cancelAnimationFrame(animRef.current);
       window.removeEventListener('resize',     init);
       window.removeEventListener('mousemove',  onMove);
       window.removeEventListener('mouseleave', onLeave);
+      window.removeEventListener('touchmove',  onTouch);
+      window.removeEventListener('touchend',   onTouchEnd);
     };
   }, []);
 
