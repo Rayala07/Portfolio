@@ -420,7 +420,7 @@ export default function HeroSection() {
 
           <Magnetic strength={0.25}>
             <motion.a
-              href="https://drive.google.com/file/d/1gL-ziJTzkVin7no3dHpVQWUiPVB1LHyb/view?usp=sharing"
+              href="https://drive.google.com/file/d/1W0_k6Zd4f6Yywp6yUpSmAry0UUELiWRT/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
               initial={{ borderColor: '#1A1A1A', color: '#A0A0A0', backgroundColor: 'rgba(0,0,0,0)' }}
