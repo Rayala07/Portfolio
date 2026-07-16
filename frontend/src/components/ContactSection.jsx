@@ -160,12 +160,19 @@ export default function ContactSection() {
   const [direction,  setDirection]  = useState(1);    // 1 = forward, -1 = back (for slide animation)
 
   const inputRef = useRef(null);
+  const didMount = useRef(false);
 
   // reset custom text when step changes
   useEffect(() => { setCustomText(''); }, [stepIndex]);
 
-  // focus textarea when custom-input appears
-  useEffect(() => { if (inputRef.current) inputRef.current.focus(); }, [stepIndex]);
+  // Focus textarea when the user advances to a new step.
+  // Skip the initial mount: focusing on load would scroll this bottom-of-page
+  // section into view, jumping the whole page to #contact on every load/refresh.
+  // preventScroll keeps focus from yanking the viewport even on later steps.
+  useEffect(() => {
+    if (!didMount.current) { didMount.current = true; return; }
+    inputRef.current?.focus({ preventScroll: true });
+  }, [stepIndex]);
 
   const step = STEPS[stepIndex];
   const currentAnswer = answers[step?.id] ?? '';
