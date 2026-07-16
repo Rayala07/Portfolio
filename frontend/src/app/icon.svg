@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="RV">
+  <!-- Brand tile: accent lavender, reads on both light and dark browser chrome -->
+  <rect width="100" height="100" rx="24" fill="#A89BF2"/>
+  <!-- Subtle top-edge highlight to match the site's glassy surfaces -->
+  <rect x="0.75" y="0.75" width="98.5" height="98.5" rx="23.25" fill="none"
+        stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
+  <!-- RV monogram -->
+  <text x="50" y="53" text-anchor="middle" dominant-baseline="central"
+        font-family="'Space Grotesk', 'Segoe UI', system-ui, Arial, sans-serif"
+        font-size="46" font-weight="700" letter-spacing="-2" fill="#0A0A0A">RV</text>
+</svg>
